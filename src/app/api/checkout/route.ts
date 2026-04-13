@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
+import { db } from '@/lib/db';
 
 // NOTE: You must add this PRICE_ID from your Stripe Dashboard
 // Dashboard -> Products -> Create Product -> Copy "api id" of the price
