@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String     @id @default(uuid())
+  name             String
+  email            String     @unique
+  password         String?
+  avatarUrl        String?
+  memberSince      DateTime   @default(now())
+  
+  listings         Listing[]  @relation("UserListings")
+  favorites        Favorite[]
+  messagesSent     Message[]  @relation("MessagesSent")
+  messagesReceived Message[]  @relation("MessagesReceived")
+}
+
+model Listing {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  price       Float
+  category    String
+  location    String
+  images      String     // Stored as JSON string
+  details     String?    // Stored as JSON string
+  status      String     @default("ACTIVE") // ACTIVE, SOLD, HIDDEN
+  createdAt   DateTime   @default(now())
+  
+  sellerId    String
+  seller      User       @relation("UserListings", fields: [sellerId], references: [id])
+  
+  favoritedBy Favorite[]
+  messages    Message[]
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  listingId String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, listingId])
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  content    String
+  createdAt  DateTime @default(now())
+  status     String   @default("UNREAD") // UNREAD, READ
+  
+  senderId   String
+  receiverId String
+  listingId  String
+  
+  sender     User     @relation("MessagesSent", fields: [senderId], references: [id])
+  receiver   User     @relation("MessagesReceived", fields: [receiverId], references: [id])
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
