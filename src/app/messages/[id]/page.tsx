@@ -148,7 +148,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
           </div>
 
           {messages.map((msg, idx) => {
-            const isMe = msg.senderId === currentUser.id;
+            const isMe = currentUser && msg.senderId === currentUser.id;
             return (
               <div key={msg.id || idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
                 <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl shadow-sm text-sm ${
