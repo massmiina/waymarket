@@ -19,14 +19,14 @@ export async function POST(request: Request) {
         name: name || email.split('@')[0],
         avatarUrl,
         role: finalRole,
-      },
+      } as any,
       create: {
         id,
         email,
         name: name || email.split('@')[0],
         avatarUrl,
         role: finalRole,
-      }
+      } as any
     });
 
     return NextResponse.json(user);
