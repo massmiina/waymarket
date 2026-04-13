@@ -1,10 +1,12 @@
 import Stripe from 'stripe';
 
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder_for_build';
+
 if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is missing from environment variables');
+  console.warn('⚠️ STRIPE_SECRET_KEY is missing. Checkout will not work properly.');
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2025-01-27' as any, // Most recent stable
+export const stripe = new Stripe(stripeSecretKey, {
+  apiVersion: '2025-01-27' as any,
   typescript: true,
 });
