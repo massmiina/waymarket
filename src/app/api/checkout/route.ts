@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { db } from '@/lib/db';
+import { db } from '@/lib/db'; // Ensure DB is imported for user limit check
 
 // NOTE: You must add this PRICE_ID from your Stripe Dashboard
 // Dashboard -> Products -> Create Product -> Copy "api id" of the price
