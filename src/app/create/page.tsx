@@ -89,24 +89,44 @@ export default function CreateListing() {
   const validateStep3 = () => images.length > 0; // Explicitly making at least 1 photo required
   const validateStep4 = () => price !== '' && Number(price) >= 0 && !!location.trim();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser || !validateStep4()) return;
 
-    addListing({
-      category: category as Category,
-      title,
-      description,
-      price: Number(price),
-      location,
-      images: images,
-      details: { ...details, condition } // Merging condition universally
-    });
+    setIsUploading(true); // Reusing upload state for submission indicator
+    try {
+      const res = await fetch('/api/listings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: category as Category,
+          title,
+          description,
+          price: Number(price),
+          location,
+          images: images,
+          details: { ...details, condition },
+          sellerId: currentUser.id
+        })
+      });
 
-    setSuccess(true);
-    setTimeout(() => {
-      router.push('/mes-ventes');
-    }, 2000);
+      const data = await res.json();
+
+      if (res.ok) {
+        setSuccess(true);
+        setTimeout(() => {
+          router.push('/mes-ventes');
+        }, 2000);
+      } else {
+        alert(`Erreur: ${data.error || "Impossible de publier l'annonce"}`);
+        console.error(data.details);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Une erreur de réseau est survenue lors de la publication.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   if (!currentUser) return null;
@@ -335,10 +355,13 @@ export default function CreateListing() {
           {currentStep === 3 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <h2 className="text-xl font-bold text-gray-900 mb-2">Ajoutez des photos</h2>
-              <p className="text-gray-500 mb-6 text-sm">Une annonce avec de belles photos se vend 4 fois plus vite ! (Max 5 photos)</p>
+              <p className="text-gray-500 mb-6 text-sm">
+                Une annonce avec de belles photos se vend 4 fois plus vite ! 
+                (Max {currentUser?.isPro ? '10' : '3'} photos {!currentUser?.isPro && "- Devenez PRO pour en ajouter 10"})
+              </p>
               
               <div className="space-y-6">
-                {images.length < 5 && (
+                {images.length < (currentUser?.isPro ? 10 : 3) && (
                   <UploadDropzone
                     endpoint="imageUploader"
                     onClientUploadComplete={(res) => {

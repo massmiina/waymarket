@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  ShoppingBag, 
   PlusCircle, 
   MessageCircle, 
   Heart, 
@@ -13,15 +12,17 @@ import {
   Package,
   Menu,
   X,
-  Home
+  Home,
+  ShieldAlert
 } from 'lucide-react';
 import { useMarket, Message } from '@/contexts/MarketContext';
+import Image from 'next/image';
 
 import { Show, UserButton, SignInButton } from '@clerk/nextjs';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { currentUser, favorites, messages } = useMarket();
+  const { currentUser, favorites, messages, isLoading: isMarketLoading } = useMarket();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const unreadMessagesCount = messages.filter(
@@ -35,14 +36,14 @@ export default function Navbar() {
       <Link
         href="/favorites"
         onClick={closeMobileMenu}
-        className={`flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-lg transition-colors font-medium ${
-          pathname === '/favorites' ? 'text-indigo-600 bg-indigo-50/50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+        className={`flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest ${
+          pathname === '/favorites' ? 'text-glacier bg-glacier/5' : 'text-slate-400 hover:text-glacier hover:bg-slate-50'
         }`}
       >
         <div className="relative">
-          <Heart className="h-5 w-5" />
+          <Heart className="h-4 w-4" />
           {favorites.length > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-indigo-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+            <span className="absolute -top-1.5 -right-1.5 bg-glacier text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-black">
               {favorites.length}
             </span>
           )}
@@ -53,25 +54,25 @@ export default function Navbar() {
       <Link
         href="/mes-ventes"
         onClick={closeMobileMenu}
-        className={`flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-lg transition-colors font-medium ${
-          pathname === '/mes-ventes' ? 'text-indigo-600 bg-indigo-50/50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+        className={`flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest ${
+          pathname === '/mes-ventes' ? 'text-glacier bg-glacier/5' : 'text-slate-400 hover:text-glacier hover:bg-slate-50'
         }`}
       >
-        <Package className="h-5 w-5" />
+        <Package className="h-4 w-4" />
         <span className="sm:hidden md:block">Mes ventes</span>
       </Link>
 
       <Link
         href="/messages"
         onClick={closeMobileMenu}
-        className={`flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-lg transition-colors font-medium ${
-          pathname === '/messages' ? 'text-indigo-600 bg-indigo-50/50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+        className={`flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest ${
+          pathname === '/messages' ? 'text-glacier bg-glacier/5' : 'text-slate-400 hover:text-glacier hover:bg-slate-50'
         }`}
       >
         <div className="relative">
-          <MessageCircle className="h-5 w-5" />
+          <MessageCircle className="h-4 w-4" />
           {unreadMessagesCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-black">
               {unreadMessagesCount}
             </span>
           )}
@@ -82,46 +83,55 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <nav className="glass-card sticky top-0 z-50 border-none shadow-none">
       <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12">
         <div className="flex justify-between items-center h-16 sm:h-20">
           
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0 flex items-center gap-2.5">
-            <div className="bg-indigo-600 text-white p-2 sm:p-2.5 rounded-xl shadow-sm">
-              <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6" />
+          {/* Final Perfect Logo - Pure Line Art (v7) */}
+          <Link href="/" className="flex-shrink-0 flex items-center gap-3 group">
+            <div className="bg-white rounded-2xl group-hover:bg-glacier transition-colors duration-500 shadow-lg shadow-slate-200/20 overflow-hidden flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
+              <Image 
+                src="/images/tower-logo-v7.png" 
+                alt="Way Market Tower" 
+                width={56} 
+                height={56} 
+                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+              />
             </div>
-            <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-gray-900">
+            <span className="font-black text-lg sm:text-xl tracking-tighter text-slate-900 leading-none">
               Way Market
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden sm:flex items-center space-x-2 md:space-x-4">
+          {/* Minimalist Desktop Navigation */}
+          <div className="hidden sm:flex items-center space-x-1 md:space-x-4">
             <Link
               href="/"
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors font-bold uppercase tracking-wider ${
-                pathname === '/' ? 'text-indigo-600 bg-indigo-50/50' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+              className={`px-4 py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest ${
+                pathname === '/' ? 'text-glacier' : 'text-slate-400 hover:text-glacier'
               }`}
             >
-              <Home className="h-5 w-5" />
-              <span className="text-sm">Accueil</span>
+              Accueil
             </Link>
 
-            <div className="w-px h-6 bg-gray-200 mx-2"></div>
-            
             <NavLinks />
 
-            <div className="w-px h-6 bg-gray-200 mx-2"></div>
-
             <Show when="signed-in">
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 ml-4">
+                {currentUser?.role === 'ADMIN' && (
+                  <Link
+                    href="/admin"
+                    className="p-2 rounded-full text-red-500 hover:bg-red-50 transition"
+                    title="Console Admin"
+                  >
+                    <ShieldAlert className="h-5 w-5" />
+                  </Link>
+                )}
                 <Link
                   href="/compte"
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition"
+                  className="p-2 rounded-full text-slate-400 hover:text-glacier transition"
                 >
                   <UserIcon className="h-5 w-5" />
-                  <span className="hidden md:block text-sm">Mon Profil</span>
                 </Link>
                 <UserButton />
               </div>
@@ -129,35 +139,40 @@ export default function Navbar() {
             
             <Show when="signed-out">
               <SignInButton mode="modal">
-                <button className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition">
-                  <UserIcon className="h-4 w-4 md:h-5 md:w-5" />
-                  <span className="text-sm">Se connecter</span>
+                <button className="px-5 py-2 rounded-xl font-bold text-[10px] text-glacier uppercase tracking-widest border border-glacier/20 hover:bg-glacier/5 transition">
+                  Se connecter
                 </button>
               </SignInButton>
             </Show>
 
             <Link
               href="/create"
-              className="ml-2 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow transition transform hover:-translate-y-0.5"
+              className="ml-4 flex items-center gap-2 px-6 py-2.5 rounded-full text-[10px] font-black bg-peaks text-white hover:bg-glacier shadow-lg shadow-peaks/5 transition-all uppercase tracking-widest"
             >
-              <PlusCircle className="h-5 w-5" />
-              <span className="hidden lg:block">Déposer une annonce</span>
-              <span className="lg:hidden">Déposer</span>
+              <PlusCircle className="h-4 w-4" />
+              <span>Vendre</span>
             </Link>
           </div>
 
           {/* Mobile menu button */}
           <div className="flex items-center sm:hidden gap-3">
-            <Link
+             {currentUser?.role === 'ADMIN' && (
+               <Link
+                href="/admin"
+                className="p-2 rounded-full bg-red-50 text-red-500"
+              >
+                <ShieldAlert className="h-5 w-5" />
+              </Link>
+             )}
+             <Link
               href="/create"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition"
+              className="p-2 rounded-full bg-peaks text-white"
             >
-              <PlusCircle className="h-4 w-4" />
-              <span>Déposer</span>
+              <PlusCircle className="h-5 w-5" />
             </Link>
             <Link
               href="/menu"
-              className="p-2 -mr-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
+              className="p-2 text-slate-600"
             >
               <Menu className="h-6 w-6" />
             </Link>

@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc; /* Snow White / Ice */
+  --foreground: #0f172a; /* Obsidian / Deep Night */
+  
+  /* Caucasus Palette */
+  --peaks-slate: #2f3e46;
+  --peaks-dark: #354f52;
+  --glacier-blue: #00b4d8;
+  --walnut: #582f0e;
+  --snow: #f8f9fa;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-peaks: var(--peaks-slate);
+  --color-glacier: var(--glacier-blue);
+  --color-walnut: var(--walnut);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@utility mountain-jagged {
+  clip-path: polygon(0 15%, 5% 0, 10% 10%, 15% 0, 20% 18%, 25% 5%, 30% 12%, 35% 2%, 40% 20%, 45% 8%, 50% 15%, 55% 5%, 60% 18%, 65% 10%, 70% 22%, 75% 12%, 80% 20%, 85% 5%, 90% 15%, 95% 0, 100% 15%, 100% 100%, 0 100%);
+}
+
+@utility glass-card {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+@utility text-glow {
+  text-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Mountain Gradient Background */
+.bg-caucasus-sky {
+  background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+}
+
+.mountain-mask {
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
 }

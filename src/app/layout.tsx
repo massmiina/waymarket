@@ -17,8 +17,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Way Market",
-  description: "Marketplace d'annonces locales",
+  title: "Way Market | Le Prestige du Commerce Caucasien",
+  description: "Découvrez Way Market, la marketplace d'élite pour l'achat et la vente de biens d'exception. Véhicules, immobilier, luxe et produits locaux au cœur du terroir.",
+  keywords: ["marketplace", "caucase", "annonces", "véhicules", "immobilier", "Way Market"],
+  openGraph: {
+    title: "Way Market | Le Prestige du Commerce Caucasien",
+    description: "La marketplace d'exception pour vos annonces locales.",
+    images: ["/images/tower-logo-v7.png"],
+  }
 };
 
 export default function RootLayout({

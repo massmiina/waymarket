@@ -3,45 +3,43 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id               String     @id @default(uuid())
-  name             String
-  email            String     @unique
-  password         String?
-  avatarUrl        String?
-  memberSince      DateTime   @default(now())
-  
-  listings         Listing[]  @relation("UserListings")
-  favorites        Favorite[]
-  messagesSent     Message[]  @relation("MessagesSent")
-  messagesReceived Message[]  @relation("MessagesReceived")
-  
-  conversationsBuyer  Conversation[] @relation("BuyerConversations")
+  id                  String         @id @default(uuid())
+  name                String
+  email               String         @unique
+  password            String?
+  avatarUrl           String?
+  memberSince         DateTime       @default(now())
+  isPro               Boolean        @default(false)
+  role                String         @default("USER")
   conversationsSeller Conversation[] @relation("SellerConversations")
+  conversationsBuyer  Conversation[] @relation("BuyerConversations")
+  favorites           Favorite[]
+  listings            Listing[]      @relation("UserListings")
+  messagesReceived    Message[]      @relation("MessagesReceived")
+  messagesSent        Message[]      @relation("MessagesSent")
 }
 
 model Listing {
-  id          String     @id @default(uuid())
-  title       String
-  description String
-  price       Float
-  category    String
-  location    String
-  images      String     // Stored as JSON string
-  details     String?    // Stored as JSON string
-  status      String     @default("ACTIVE") // ACTIVE, SOLD, HIDDEN
-  createdAt   DateTime   @default(now())
-  
-  sellerId    String
-  seller      User       @relation("UserListings", fields: [sellerId], references: [id])
-  
-  favoritedBy   Favorite[]
-  messages      Message[]
+  id            String         @id @default(uuid())
+  title         String
+  description   String
+  price         Float
+  category      String
+  location      String
+  images        String
+  details       String?
+  status        String         @default("ACTIVE")
+  createdAt     DateTime       @default(now())
+  sellerId      String
   conversations Conversation[]
+  favoritedBy   Favorite[]
+  seller        User           @relation("UserListings", fields: [sellerId], references: [id])
+  messages      Message[]
 }
 
 model Favorite {
@@ -49,27 +47,23 @@ model Favorite {
   userId    String
   listingId String
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id])
   listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  
+  user      User     @relation(fields: [userId], references: [id])
+
   @@unique([userId, listingId])
 }
 
 model Conversation {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   listingId String
-  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  
   buyerId   String
-  buyer     User     @relation("BuyerConversations", fields: [buyerId], references: [id])
-  
   sellerId  String
-  seller    User     @relation("SellerConversations", fields: [sellerId], references: [id])
-  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  seller    User      @relation("SellerConversations", fields: [sellerId], references: [id])
+  buyer     User      @relation("BuyerConversations", fields: [buyerId], references: [id])
+  listing   Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
   messages  Message[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@unique([listingId, buyerId, sellerId])
 }
@@ -78,17 +72,13 @@ model Message {
   id             String       @id @default(uuid())
   content        String
   createdAt      DateTime     @default(now())
-  status         String       @default("UNREAD") // UNREAD, READ
-  
+  status         String       @default("UNREAD")
   conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  
   senderId       String
-  sender         User         @relation("MessagesSent", fields: [senderId], references: [id])
-  
   receiverId     String
-  receiver       User         @relation("MessagesReceived", fields: [receiverId], references: [id])
-  
   listingId      String
   listing        Listing      @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  receiver       User         @relation("MessagesReceived", fields: [receiverId], references: [id])
+  sender         User         @relation("MessagesSent", fields: [senderId], references: [id])
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }

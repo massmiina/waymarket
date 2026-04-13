@@ -65,6 +65,16 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
+        include: {
+          seller: {
+            select: {
+              id: true,
+              name: true,
+              isPro: true,
+              avatarUrl: true
+            } as any
+          }
+        }
       }),
       db.listing.count({ where })
     ]);
@@ -107,6 +117,20 @@ export async function POST(request: Request) {
 
     const { data } = validated;
 
+    // --- SECURITY CHECK: Photo limits based on Pro status ---
+    const user = await db.user.findUnique({ where: { id: data.sellerId } });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const photoLimit = (user as any).isPro ? 10 : 3;
+    if (data.images.length > photoLimit) {
+      return NextResponse.json({ 
+        error: `Photo limit exceeded. ${(user as any).isPro ? 'Pro' : 'Regular'} users are limited to ${photoLimit} photos.` 
+      }, { status: 403 });
+    }
+    // -------------------------------------------------------
+
     const created = await db.listing.create({
       data: {
         title: data.title,
@@ -118,7 +142,7 @@ export async function POST(request: Request) {
         details: data.details ? JSON.stringify(data.details) : null,
         sellerId: data.sellerId,
         status: 'ACTIVE'
-      }
+      } as any
     });
 
     return NextResponse.json({

@@ -19,6 +19,8 @@ export interface User {
   email: string;
   avatarUrl?: string | null;
   memberSince: string;
+  isPro: boolean;
+  role: string;
 }
 
 export interface ListingBase {
@@ -31,6 +33,12 @@ export interface ListingBase {
   location: string;
   images: string[];
   createdAt: string;
+  seller?: {
+    id: string;
+    name: string;
+    isPro: boolean;
+    avatarUrl?: string | null;
+  };
 }
 
 export interface VehicleListing extends ListingBase {
@@ -161,6 +169,18 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
+      // --- INSTANT ADMIN DETECTION (Pre-sync) ---
+      const ADMIN_EMAILS = ['yasmina.dzhv@gmail.com', 'dzhamayevtimur@gmail.com'];
+      const userEmail = clerkUser.primaryEmailAddress?.emailAddress?.toLowerCase().trim();
+      
+      if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
+         setCurrentUser(prev => ({
+           ...(prev || { id: clerkUser.id, name: clerkUser.fullName || '', email: userEmail, memberSince: new Date().toISOString(), isPro: false }),
+           role: 'ADMIN'
+         } as any));
+      }
+      // ------------------------------------------
+
       try {
         const syncRes = await fetch('/api/auth/sync', {
           method: 'POST',
@@ -170,11 +190,21 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
             email: clerkUser.primaryEmailAddress?.emailAddress,
             name: clerkUser.fullName,
             avatarUrl: clerkUser.imageUrl,
+            role: (clerkUser.publicMetadata as any).role || 'USER',
           })
         });
 
+        const ADMIN_EMAILS = ['yasmina.dzhv@gmail.com', 'dzhamayevtimur@gmail.com'];
+        const userEmail = clerkUser.primaryEmailAddress?.emailAddress?.toLowerCase().trim();
+
         if (syncRes.ok) {
           const syncedUser = await syncRes.json();
+          
+          // Force admin status if email matches
+          if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
+            syncedUser.role = 'ADMIN';
+          }
+          
           setCurrentUser(syncedUser);
           
           // Fetch user-specific data

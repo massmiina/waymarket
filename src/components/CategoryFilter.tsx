@@ -28,10 +28,10 @@ export default function CategoryFilter({ activeCategory, onSelect }: CategoryFil
         <button
           key={cat.name}
           onClick={() => onSelect(cat.name)}
-          className={`flex flex-col items-center justify-center min-w-[72px] sm:min-w-[88px] p-2 rounded-xl transition snap-start border ${
+          className={`flex flex-col items-center justify-center min-w-[72px] sm:min-w-[88px] p-3 rounded-2xl transition snap-start border ${
             activeCategory === cat.name
-              ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-medium'
-              : 'bg-white border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-gray-800'
+              ? 'bg-glacier/5 border-glacier/20 text-glacier font-black uppercase tracking-widest'
+              : 'bg-white/50 border-slate-100 text-slate-400 hover:bg-slate-50 hover:text-slate-900 font-bold uppercase tracking-widest'
           }`}
         >
           {cat.icon}
