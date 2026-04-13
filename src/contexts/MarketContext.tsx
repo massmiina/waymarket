@@ -105,6 +105,24 @@ export interface Message {
   read: boolean;
 }
 
+export interface Conversation {
+  id: string;
+  listingId: string;
+  listing: {
+    title: string;
+    price: number;
+    images: string[];
+  };
+  otherUser: {
+    name: string;
+    avatarUrl: string | null;
+  };
+  otherUserId: string;
+  lastMessage?: Message;
+  unreadCount: number;
+  updatedAt: string;
+}
+
 interface MarketContextType {
   currentUser: User | null;
   listings: Listing[];
@@ -113,8 +131,10 @@ interface MarketContextType {
   favorites: string[]; 
   toggleFavorite: (listingId: string) => Promise<void>;
   messages: Message[];
+  conversations: Conversation[];
   sendMessage: (listingId: string, receiverId: string, content: string) => Promise<void>;
-  markMessagesAsRead: (listingId: string, senderId: string) => Promise<void>;
+  markMessagesAsRead: (conversationId: string) => Promise<void>;
+  fetchMessagesForConversation: (conversationId: string) => Promise<Message[]>;
   metadata: { total: number; page: number; limit: number; hasMore: boolean };
   fetchMoreListings: () => Promise<void>;
   isLoading: boolean;
@@ -129,6 +149,7 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isDataLoading, setIsDataLoading] = useState(true);
 
   // Sync Clerk User with DB and fetch user-specific data
@@ -156,11 +177,14 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
           const syncedUser = await syncRes.json();
           setCurrentUser(syncedUser);
           
-          // Fetch favorites
-          const favRes = await fetch(`/api/favorites?userId=${syncedUser.id}`);
-          if (favRes.ok) {
-            setFavorites(await favRes.json());
-          }
+          // Fetch user-specific data
+          const [favRes, convsRes] = await Promise.all([
+            fetch(`/api/favorites?userId=${syncedUser.id}`),
+            fetch(`/api/conversations?userId=${syncedUser.id}`)
+          ]);
+
+          if (favRes.ok) setFavorites(await favRes.json());
+          if (convsRes.ok) setConversations(await convsRes.json());
         }
       } catch (err) {
         console.error("Sync error:", err);
@@ -205,6 +229,31 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
     
     loadGlobalData();
   }, []);
+
+  const fetchConversations = async () => {
+    if (!currentUser) return;
+    try {
+      const res = await fetch(`/api/conversations?userId=${currentUser.id}`);
+      if (res.ok) {
+        setConversations(await res.json());
+      }
+    } catch (err) {
+      console.error("Fetch conversations error:", err);
+    }
+  };
+
+  const fetchMessagesForConversation = async (conversationId: string) => {
+    try {
+      const res = await fetch(`/api/messages?conversationId=${conversationId}`);
+      if (res.ok) {
+        return await res.json();
+      }
+      return [];
+    } catch (err) {
+      console.error("Fetch conversation messages error:", err);
+      return [];
+    }
+  };
 
   const fetchMoreListings = async () => {
     if (!metadata.hasMore || isDataLoading) return;
@@ -287,26 +336,26 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
       if (res.ok) {
         const newMsg = await res.json();
         setMessages(prev => [...prev, newMsg]);
+        // Refresh conversations list to show new message / new conversation
+        await fetchConversations();
       }
     } catch (error) {
       console.error("Message send error:", error);
     }
   };
 
-  const markMessagesAsRead = async (listingId: string, senderId: string) => {
+  const markMessagesAsRead = async (conversationId: string) => {
     if (!currentUser) return;
     
-    setMessages(msgs => msgs.map(m => 
-      (m.listingId === listingId && m.senderId === senderId && m.receiverId === currentUser.id) 
-        ? { ...m, read: true } 
-        : m
+    setConversations(prev => prev.map(conv => 
+      conv.id === conversationId ? { ...conv, unreadCount: 0 } : conv
     ));
 
     try {
       await fetch('/api/messages', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ listingId, senderId, receiverId: currentUser.id })
+        body: JSON.stringify({ conversationId, userId: currentUser.id })
       });
     } catch (error) {
       console.error("Mark read error:", error);
@@ -322,8 +371,10 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
       favorites,
       toggleFavorite,
       messages,
+      conversations,
       sendMessage,
       markMessagesAsRead,
+      fetchMessagesForConversation,
       metadata,
       fetchMoreListings,
       isLoading: !isUserLoaded || !isAuthLoaded || isDataLoading

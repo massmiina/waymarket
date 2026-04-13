@@ -17,8 +17,12 @@ import {
   Box,
   ChevronRight,
   ChevronLeft,
-  Wrench
+  Wrench,
+  XCircle,
+  Image as ImageIcon
 } from 'lucide-react';
+import { UploadDropzone } from "@/lib/uploadthing";
+import "@uploadthing/react/styles.css";
 
 const CATEGORIES: { id: Category; label: string; icon: React.FC<any> }[] = [
   { id: 'Véhicules', label: 'Véhicules', icon: Car },
@@ -55,8 +59,9 @@ export default function CreateListing() {
   const [condition, setCondition] = useState('');
   const [price, setPrice] = useState('');
   const [location, setLocation] = useState('');
-  const [image, setImage] = useState('');
+  const [images, setImages] = useState<string[]>([]);
   const [details, setDetails] = useState<Record<string, string | number | boolean>>({});
+  const [isUploading, setIsUploading] = useState(false);
 
   React.useEffect(() => {
     if (!currentUser) {
@@ -66,21 +71,6 @@ export default function CreateListing() {
 
   const handleDetailChange = (key: string, value: string | number | boolean) => {
     setDetails(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("L'image est trop volumineuse (max 5MB)");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
@@ -96,7 +86,7 @@ export default function CreateListing() {
     if (category === 'Immobilier' && (!details.type || !details.rooms || !details.surfaceArea || !details.energyClass)) return false;
     return true;
   };
-  const validateStep3 = () => !!image; // Explicitly making 1 photo required as requested
+  const validateStep3 = () => images.length > 0; // Explicitly making at least 1 photo required
   const validateStep4 = () => price !== '' && Number(price) >= 0 && !!location.trim();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -109,7 +99,7 @@ export default function CreateListing() {
       description,
       price: Number(price),
       location,
-      images: [image],
+      images: images,
       details: { ...details, condition } // Merging condition universally
     });
 
@@ -345,41 +335,68 @@ export default function CreateListing() {
           {currentStep === 3 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <h2 className="text-xl font-bold text-gray-900 mb-2">Ajoutez des photos</h2>
-              <p className="text-gray-500 mb-6 text-sm">Une annonce avec de belles photos se vend 4 fois plus vite !</p>
+              <p className="text-gray-500 mb-6 text-sm">Une annonce avec de belles photos se vend 4 fois plus vite ! (Max 5 photos)</p>
               
-              {!image ? (
-                <div className="mt-1 flex justify-center px-6 pt-16 pb-16 border-2 border-indigo-200 border-dashed rounded-2xl hover:bg-indigo-50/50 transition cursor-pointer relative bg-gray-50">
-                  <div className="space-y-2 text-center">
-                    <div className="mx-auto h-20 w-20 text-indigo-500 bg-indigo-100 rounded-full flex items-center justify-center mb-6 shadow-sm">
-                      <UploadCloud className="h-10 w-10 text-indigo-600" />
-                    </div>
-                    <div className="flex text-lg font-bold text-gray-700 justify-center">
-                      <label htmlFor="file-upload" className="relative cursor-pointer rounded-md text-indigo-600 hover:text-indigo-500 focus-within:outline-none">
-                        <span>Cliquez pour parcourir vos fichiers</span>
-                        <input id="file-upload" name="file-upload" type="file" accept="image/*" className="sr-only" onChange={handleImageUpload} />
-                      </label>
-                    </div>
-                    <p className="text-sm text-gray-500 font-medium pt-2">PNG, JPG, GIF (Max 5MB)</p>
+              <div className="space-y-6">
+                {images.length < 5 && (
+                  <UploadDropzone
+                    endpoint="imageUploader"
+                    onClientUploadComplete={(res) => {
+                      if (res) {
+                        const urls = res.map(file => file.url);
+                        setImages(prev => [...prev, ...urls]);
+                        setIsUploading(false);
+                      }
+                    }}
+                    onUploadError={(error: Error) => {
+                      alert(`Erreur lors de l'upload: ${error.message}`);
+                      setIsUploading(false);
+                    }}
+                    onUploadBegin={() => {
+                      setIsUploading(true);
+                    }}
+                    appearance={{
+                      container: "border-2 border-indigo-200 border-dashed rounded-2xl bg-gray-50 hover:bg-indigo-50/50 transition duration-300",
+                      label: "text-indigo-600 font-bold hover:text-indigo-500",
+                      allowedContent: "text-gray-500 font-medium",
+                      button: "bg-indigo-600 hover:bg-indigo-700 ut-ready:bg-indigo-600 ut-uploading:bg-indigo-400 mt-4 px-6 py-2 rounded-xl"
+                    }}
+                    content={{
+                      label: "Déposez vos images ici",
+                      allowedContent: "Images PNG, JPG jusqu'à 4MB"
+                    }}
+                  />
+                )}
+
+                {images.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-8">
+                    {images.map((url, index) => (
+                      <div key={index} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-white shadow-md group">
+                        <img src={url} alt={`Aperçu ${index + 1}`} className="w-full h-full object-cover" />
+                        <button 
+                          type="button" 
+                          onClick={() => setImages(prev => prev.filter((_, i) => i !== index))} 
+                          className="absolute top-2 right-2 bg-red-500/90 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition opacity-0 group-hover:opacity-100"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                        {index === 0 && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-indigo-600/90 text-white text-[10px] font-bold py-1 text-center uppercase tracking-wider">
+                            Photo principale
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                </div>
-              ) : (
-                <div className="relative inline-block mt-2 w-full max-w-sm mx-auto flex flex-col items-center">
-                  <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-gray-100">
-                    <img src={image} alt="Aperçu" className="w-full h-full object-cover" />
-                    <button 
-                      type="button" 
-                      onClick={() => setImage('')} 
-                      className="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2.5 shadow-md hover:bg-red-600 hover:scale-110 transition transform"
-                      title="Supprimer la photo"
-                    >
-                      <X className="w-6 h-6" />
-                    </button>
+                )}
+
+                {isUploading && (
+                  <div className="flex items-center justify-center gap-3 p-4 bg-indigo-50 rounded-xl text-indigo-700 font-medium animate-pulse">
+                    <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                    Téléchargement des images...
                   </div>
-                  <p className="text-sm font-medium text-green-600 mt-4 flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5" /> Photo ajoutée avec succès
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
 
@@ -421,11 +438,15 @@ export default function CreateListing() {
                 
                 {/* Summary Box */}
                 <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5 flex items-center gap-4 mt-8">
-                   <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-200">
-                     <img src={image} alt="Preview" className="w-full h-full object-cover" />
+                   <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-200 bg-gray-100 flex items-center justify-center">
+                     {images[0] ? (
+                       <img src={images[0]} alt="Preview" className="w-full h-full object-cover" />
+                     ) : (
+                       <ImageIcon className="w-6 h-6 text-gray-300" />
+                     )}
                    </div>
-                   <div>
-                     <h4 className="font-bold text-gray-900 line-clamp-1">{title}</h4>
+                   <div className="flex-1 min-w-0">
+                     <h4 className="font-bold text-gray-900 truncate">{title || "Sans titre"}</h4>
                      <p className="text-sm font-medium text-indigo-600 mt-1">{price || '0'} €</p>
                    </div>
                 </div>

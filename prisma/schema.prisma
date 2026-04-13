@@ -19,6 +19,9 @@ model User {
   favorites        Favorite[]
   messagesSent     Message[]  @relation("MessagesSent")
   messagesReceived Message[]  @relation("MessagesReceived")
+  
+  conversationsBuyer  Conversation[] @relation("BuyerConversations")
+  conversationsSeller Conversation[] @relation("SellerConversations")
 }
 
 model Listing {
@@ -36,8 +39,9 @@ model Listing {
   sellerId    String
   seller      User       @relation("UserListings", fields: [sellerId], references: [id])
   
-  favoritedBy Favorite[]
-  messages    Message[]
+  favoritedBy   Favorite[]
+  messages      Message[]
+  conversations Conversation[]
 }
 
 model Favorite {
@@ -52,17 +56,39 @@ model Favorite {
   @@unique([userId, listingId])
 }
 
+model Conversation {
+  id        String   @id @default(uuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  
+  buyerId   String
+  buyer     User     @relation("BuyerConversations", fields: [buyerId], references: [id])
+  
+  sellerId  String
+  seller    User     @relation("SellerConversations", fields: [sellerId], references: [id])
+  
+  messages  Message[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([listingId, buyerId, sellerId])
+}
+
 model Message {
-  id         String   @id @default(uuid())
-  content    String
-  createdAt  DateTime @default(now())
-  status     String   @default("UNREAD") // UNREAD, READ
+  id             String       @id @default(uuid())
+  content        String
+  createdAt      DateTime     @default(now())
+  status         String       @default("UNREAD") // UNREAD, READ
   
-  senderId   String
-  receiverId String
-  listingId  String
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   
-  sender     User     @relation("MessagesSent", fields: [senderId], references: [id])
-  receiver   User     @relation("MessagesReceived", fields: [receiverId], references: [id])
-  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("MessagesSent", fields: [senderId], references: [id])
+  
+  receiverId     String
+  receiver       User         @relation("MessagesReceived", fields: [receiverId], references: [id])
+  
+  listingId      String
+  listing        Listing      @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }

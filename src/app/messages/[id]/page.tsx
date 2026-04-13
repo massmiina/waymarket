@@ -1,138 +1,195 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import { useMarket } from '@/contexts/MarketContext';
 import { useRouter } from 'next/navigation';
-import { MessageCircle, Send, ArrowLeft } from 'lucide-react';
+import { Send, ChevronLeft, MapPin, MoreVertical, ShieldCheck } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
-export default function ConversationPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ChatPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
-  const { currentUser, messages, listings, sendMessage, markMessagesAsRead } = useMarket();
+  const { 
+    currentUser, 
+    conversations, 
+    fetchMessagesForConversation, 
+    sendMessage, 
+    markMessagesAsRead,
+    isLoading 
+  } = useMarket();
   const router = useRouter();
+  
+  const [messages, setMessages] = useState<any[]>([]);
+  const [inputText, setInputText] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [replyText, setReplyText] = useState('');
+  const conversation = conversations.find(c => c.id === resolvedParams.id);
 
-  React.useEffect(() => {
-    if (!currentUser) router.push('/auth');
-  }, [currentUser, router]);
+  // Initial Load & Polling
+  useEffect(() => {
+    if (!currentUser) return;
 
-  const conversationId = resolvedParams.id;
-  const [listingId, partnerId] = conversationId.split('_');
+    const loadMessages = async () => {
+      const msgs = await fetchMessagesForConversation(resolvedParams.id);
+      setMessages(msgs);
+      // Mark as read when opening
+      markMessagesAsRead(resolvedParams.id);
+    };
 
-  const activeMessages = messages.filter(msg => 
-    msg.listingId === listingId && 
-    (msg.senderId === partnerId || msg.receiverId === partnerId) &&
-    (msg.senderId === currentUser?.id || msg.receiverId === currentUser?.id)
-  );
+    loadMessages();
 
-  const relatedListing = listings.find(l => l.id === listingId);
+    // Polling every 5 seconds for new messages
+    const interval = setInterval(loadMessages, 5000);
+    return () => clearInterval(interval);
+  }, [resolvedParams.id, currentUser]);
 
-  React.useEffect(() => {
-    if (currentUser && activeMessages.length > 0) {
-      activeMessages.forEach(msg => {
-        if (msg.receiverId === currentUser.id && !msg.read) {
-          markMessagesAsRead(msg.listingId, msg.senderId);
-        }
-      });
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputText.trim() || !conversation || !currentUser || isSending) return;
+
+    const text = inputText.trim();
+    setInputText('');
+    setIsSending(true);
+
+    try {
+      // Use the helper from context
+      await sendMessage(
+        conversation.listingId, // We'll add this to the API
+        conversation.otherUserId,
+        text
+      );
+      
+      // Refresh messages
+      const msgs = await fetchMessagesForConversation(resolvedParams.id);
+      setMessages(msgs);
+    } catch (err) {
+      console.error("Send error:", err);
+      setInputText(text);
+    } finally {
+      setIsSending(false);
     }
-  }, [currentUser, activeMessages, markMessagesAsRead]);
+  };
 
-  if (!currentUser) return null;
-
-  if (activeMessages.length === 0) {
+  if (isLoading || !conversation) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navbar />
-        <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-          <div className="text-center">
-            <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900">Conversation introuvable</h2>
-            <button onClick={() => router.push('/messages')} className="mt-4 text-indigo-600 font-medium hover:underline">
-              Retour aux messages
-            </button>
-          </div>
+        <div className="flex-grow flex items-center justify-center">
+          <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
     );
   }
 
-  const handleReply = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!replyText.trim()) return;
-    sendMessage(listingId, partnerId, replyText);
-    setReplyText('');
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       <Navbar />
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 w-full flex-grow flex flex-col h-[calc(100vh-64px)]">
+      
+      <main className="flex-grow flex flex-col max-w-5xl mx-auto w-full bg-white shadow-xl overflow-hidden sm:my-4 sm:rounded-3xl border border-gray-100">
         
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex-grow flex flex-col overflow-hidden h-full">
-          <div className="p-4 border-b border-gray-100 bg-white flex items-center justify-between shadow-sm z-10 shrink-0">
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={() => router.push('/messages')} 
-                className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 rounded-full transition mr-1"
-                title="Retour"
-              >
-                 <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push(`/listings/${listingId}`)}>
-                <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden shrink-0 relative hover:opacity-80 transition">
-                  {relatedListing?.images[0] ? (
-                    <img src={relatedListing.images[0]} alt="Produit" className="w-full h-full object-cover" />
-                  ) : <MessageCircle className="w-5 h-5 text-gray-400 absolute inset-0 m-auto" />}
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 line-clamp-1 hover:text-indigo-600 transition">{relatedListing?.title || 'Annonce supprimée'}</h3>
-                  <p className="text-xs text-gray-500">
-                    Cliquez pour voir l&apos;annonce
-                  </p>
-                </div>
+        {/* Chat Header */}
+        <div className="px-4 py-3 border-b border-gray-100 bg-white flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3">
+            <button onClick={() => router.push('/messages')} className="p-2 hover:bg-gray-50 rounded-full transition sm:hidden">
+              <ChevronLeft className="w-6 h-6 text-gray-600" />
+            </button>
+            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-100 border border-gray-100">
+              <img 
+                src={conversation.otherUser.avatarUrl || `https://ui-avatars.com/api/?name=${conversation.otherUser.name}`} 
+                alt={conversation.otherUser.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <h2 className="font-bold text-gray-900 leading-tight">{conversation.otherUser.name}</h2>
+              <div className="flex items-center gap-1 text-[10px] text-green-500 font-bold uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                En ligne
               </div>
             </div>
           </div>
 
-          <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-50/50">
-            {activeMessages.map(msg => {
-              const isMe = msg.senderId === currentUser.id;
-              return (
-                <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-3 text-sm ${
-                    isMe ? 'bg-indigo-600 text-white rounded-br-none shadow-sm' : 'bg-white text-gray-900 border border-gray-100 rounded-bl-none shadow-sm'
-                  }`}>
-                    {msg.content}
-                    <div className={`text-[10px] mt-1.5 text-right w-full block ${isMe ? 'text-indigo-200' : 'text-gray-400'}`}>
-                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          <div className="p-4 bg-white border-t border-gray-100 shrink-0">
-            <form onSubmit={handleReply} className="flex gap-2">
-              <input
-                type="text"
-                className="flex-grow border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Rédigez votre message..."
-                value={replyText}
-                onChange={e => setReplyText(e.target.value)}
-              />
-              <button 
-                type="submit" 
-                disabled={!replyText.trim()}
-                className="bg-indigo-600 text-white p-3 px-4 sm:px-6 rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 font-medium flex items-center justify-center gap-2"
-              >
-                <span className="hidden sm:inline">Envoyer</span>
-                <Send className="w-5 h-5" />
-              </button>
-            </form>
+          <div className="flex items-center gap-4">
+             <div className="hidden md:flex items-center gap-2 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100">
+               <ShieldCheck className="w-4 h-4 text-indigo-600" />
+               <span className="text-xs font-bold text-indigo-700">Paiement sécurisé</span>
+             </div>
+             <button className="p-2 hover:bg-gray-50 rounded-full text-gray-400">
+               <MoreVertical className="w-5 h-5" />
+             </button>
           </div>
         </div>
+
+        {/* Listing Context Bar */}
+        <Link href={`/listings/${conversation.id}`} className="px-4 py-2 bg-gray-50/50 border-b border-gray-100 flex items-center gap-3 hover:bg-gray-50 transition shrink-0">
+          <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden border border-gray-100">
+            <img src={conversation.listing.images[0]} alt={conversation.listing.title} className="w-full h-full object-cover" />
+          </div>
+          <div className="flex-grow min-w-0">
+            <h4 className="text-sm font-bold text-gray-900 truncate">{conversation.listing.title}</h4>
+            <p className="text-sm font-extrabold text-indigo-600">{conversation.listing.price} €</p>
+          </div>
+          <ChevronLeft className="w-4 h-4 text-gray-300 rotate-180" />
+        </Link>
+
+        {/* Messages Space */}
+        <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-[#f8f9fc]">
+          <div className="text-center py-4">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-gray-100">
+              Début de la discussion
+            </span>
+          </div>
+
+          {messages.map((msg, idx) => {
+            const isMe = msg.senderId === currentUser.id;
+            return (
+              <div key={msg.id || idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl shadow-sm text-sm ${
+                  isMe 
+                    ? 'bg-indigo-600 text-white rounded-tr-none' 
+                    : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
+                }`}>
+                  <p className="leading-relaxed">{msg.content}</p>
+                  <div className={`text-[9px] mt-1 font-medium ${isMe ? 'text-indigo-200 text-right' : 'text-gray-400'}`}>
+                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input Area */}
+        <div className="p-4 bg-white border-t border-gray-100 shrink-0">
+          <form onSubmit={handleSend} className="flex gap-2">
+            <input
+              type="text"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="Écrivez votre message..."
+              className="flex-grow bg-gray-50 border border-gray-200 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+            />
+            <button
+              type="submit"
+              disabled={!inputText.trim() || isSending}
+              className="bg-indigo-600 text-white p-3 rounded-2xl hover:bg-indigo-700 transition disabled:opacity-50 disabled:scale-95 shadow-lg shadow-indigo-100"
+            >
+              <Send className="w-5 h-5" />
+            </button>
+          </form>
+          <p className="text-[10px] text-gray-400 text-center mt-3 font-medium">
+            Restez sur Way Market pour garantir la sécurité de vos transactions.
+          </p>
+        </div>
+
       </main>
     </div>
   );

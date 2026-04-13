@@ -35,16 +35,19 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
     );
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!currentUser) {
       router.push('/auth');
       return;
     }
     if (messageText.trim()) {
-      sendMessage(listing.id, listing.sellerId, messageText);
+      await sendMessage(listing.id, listing.sellerId, messageText);
       setMessageText('');
       setMessageSent(true);
-      setTimeout(() => setMessageSent(false), 3000);
+      // Wait a moment so they see the success message, then redirect to the messages hub
+      setTimeout(() => {
+        router.push('/messages');
+      }, 1500);
     }
   };
 
