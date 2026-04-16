@@ -42,7 +42,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
     { href: '/favorites', icon: Heart, label: 'Favoris', color: 'text-pink-500', badge: favorites.length },
     { href: '/messages', icon: MessageSquare, label: 'Messages', color: 'text-amber-500', badge: messages.filter(m => !m.read).length },
     { href: '/mes-ventes', icon: Package, label: 'Mes annonces', color: 'text-indigo-500' },
-    { href: '/pro', icon: Zap, label: 'Passer Pro', color: 'text-yellow-500' },
+    { href: '/pro', icon: currentUser?.isPro ? Shield : Zap, label: currentUser?.isPro ? 'Mon Statut Pro' : 'Passer Pro', color: currentUser?.isPro ? 'text-glacier' : 'text-yellow-500' },
     { href: '/compte', icon: Settings, label: 'Paramètres', color: 'text-slate-500' },
   ];
 

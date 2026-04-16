@@ -145,26 +145,21 @@ export default function AccountPage() {
                 </div>
               </div>
 
-              {!currentUser?.isPro && (
-                <div className="hidden sm:flex gap-2 w-auto">
-                  <button 
-                    onClick={() => router.push('/pro')}
-                    className="flex items-center justify-center gap-2 px-8 py-4 bg-glacier text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-900 transition shadow-xl shadow-glacier/20 active:scale-95 animate-pulse"
-                  >
-                    <span>⭐ Offre PRO</span>
-                  </button>
-                </div>
-              )}
+              <div className="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+                <button 
+                  onClick={() => router.push(currentUser?.isPro ? '/pro' : '/pro')}
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition shadow-xl active:scale-95 ${
+                    currentUser?.isPro 
+                      ? 'bg-slate-900 text-white shadow-slate-200/20' 
+                      : 'bg-glacier text-white shadow-glacier/20 animate-pulse'
+                  }`}
+                >
+                  <span>{currentUser?.isPro ? '💎 Gérer mon abonnement Pro' : (userCount < 1000 ? '⭐ Offre PRO Gratuite' : 'Devenir Pro')}</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
-          {!currentUser?.isPro && (
-            <button 
-              onClick={() => router.push('/pro')}
-              className="mt-4 w-full sm:hidden flex items-center justify-center gap-2 py-3 bg-glacier text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg active:scale-95"
-            >
-              ⭐ Profiter du mode PRO
-            </button>
-          )}
         </div>
 
         {/* Dashboard Grid */}
