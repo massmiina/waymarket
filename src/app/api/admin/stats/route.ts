@@ -28,7 +28,7 @@ export async function GET() {
       db.user.count({ where: { isPro: true } })
     ]);
 
-    // 2. Fetch Recent Activity (last 12 mixed items)
+    // 2. Fetch Recent Activity (last 6 of each)
     const [recentListings, recentUsers] = await Promise.all([
       db.listing.findMany({
         take: 6,
@@ -42,7 +42,7 @@ export async function GET() {
       })
     ]);
 
-    // Combine and format activity
+    // Format activity list
     const activity = [
       ...recentListings.map(l => ({
         id: l.id,
@@ -62,6 +62,32 @@ export async function GET() {
       }))
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
+    // 3. Generate Chart Data (last 7 days)
+    const chartData = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+      
+      const nextDay = new Date(date);
+      nextDay.setDate(nextDay.getDate() + 1);
+
+      const [userCount, listingCount] = await Promise.all([
+        db.user.count({
+          where: { memberSince: { gte: date, lt: nextDay } }
+        }),
+        db.listing.count({
+          where: { createdAt: { gte: date, lt: nextDay } }
+        })
+      ]);
+
+      chartData.push({
+        name: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+        users: userCount,
+        listings: listingCount
+      });
+    }
+
     return NextResponse.json({
       stats: {
         totalUsers,
@@ -69,7 +95,8 @@ export async function GET() {
         totalMessages,
         proUsers
       },
-      activity: activity.slice(0, 10)
+      activity: activity.slice(0, 10),
+      chartData
     });
 
   } catch (error) {

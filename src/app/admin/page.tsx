@@ -16,9 +16,19 @@ import {
   Clock,
   UserPlus,
   PlusCircle,
-  ArrowRight
+  ArrowRight,
+  TrendingUp
 } from 'lucide-react';
 import Link from 'next/link';
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from 'recharts';
 
 export default function AdminPage() {
   const { currentUser, listings, isLoading: isMarketLoading } = useMarket();
@@ -137,6 +147,79 @@ export default function AdminPage() {
             label="Messages" 
             color="bg-indigo-500"
           />
+        </div>
+
+        {/* GROWTH CHART */}
+        <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-gray-100 shadow-sm mb-12 animate-in fade-in zoom-in duration-700">
+           <div className="flex items-center justify-between mb-8 px-2">
+              <div>
+                 <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-indigo-600" /> Dynamique de Croissance
+                 </h2>
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Évolution sur les 7 derniers jours</p>
+              </div>
+              <div className="flex items-center gap-4">
+                 <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-indigo-600"></div>
+                    <span className="text-[9px] font-black uppercase text-gray-500">Membres</span>
+                 </div>
+                 <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                    <span className="text-[9px] font-black uppercase text-gray-500">Annonces</span>
+                 </div>
+              </div>
+           </div>
+
+           <div className="h-[250px] sm:h-[350px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={adminStats?.chartData || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorListings" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis 
+                    dataKey="name" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} 
+                    dy={10}
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} 
+                  />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '11px', fontWeight: 700 }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="users" 
+                    stroke="#4f46e5" 
+                    strokeWidth={4} 
+                    fillOpacity={1} 
+                    fill="url(#colorUsers)" 
+                    animationDuration={2000}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="listings" 
+                    stroke="#10b981" 
+                    strokeWidth={4} 
+                    fillOpacity={1} 
+                    fill="url(#colorListings)" 
+                    animationDuration={2000}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
