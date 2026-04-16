@@ -99,20 +99,42 @@ export default function CreateListing() {
     setDetails(prev => ({ ...prev, [key]: value }));
   };
 
-  const validateAll = () => {
-    const basic = !!category && !!title.trim() && !!description.trim() && !!condition && images.length > 0 && price !== '' && !!location.trim();
+  const getMissingFields = () => {
+    const missing: string[] = [];
+    if (!category) missing.push("Catégorie");
+    if (!title.trim()) missing.push("Titre");
+    if (!description.trim()) missing.push("Description");
+    if (!condition) missing.push("État");
+    if (images.length === 0) missing.push("Au moins une photo");
+    if (price === '' || isNaN(Number(price.replace(/[^0-9.]/g, '')))) missing.push("Prix valide");
+    if (!location.trim()) missing.push("Localisation");
+
     if (category === 'Véhicules') {
-      return basic && !!details.brand && !!details.model && !!details.mileage && !!details.year;
+      if (!details.brand) missing.push("Marque");
+      if (!details.model) missing.push("Modèle");
+      if (!details.mileage) missing.push("Kilométrage");
+      if (!details.year) missing.push("Année");
     }
-    return basic;
+    return missing;
+  };
+
+  const validateAll = () => {
+    return getMissingFields().length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentUser || !validateAll()) return;
+    const missing = getMissingFields();
+    if (!currentUser || missing.length > 0) {
+      if (missing.length > 0) alert(`Champs manquants : ${missing.join(', ')}`);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
+      // Sanitize price: remove spaces, replace comma with dot
+      const cleanPrice = price.replace(/\s/g, '').replace(',', '.');
+      
       const res = await fetch('/api/listings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -120,7 +142,7 @@ export default function CreateListing() {
           category: category as Category,
           title,
           description,
-          price: Number(price),
+          price: Number(cleanPrice),
           location,
           images: images,
           details: { ...details, condition },
@@ -133,10 +155,15 @@ export default function CreateListing() {
         setSuccess(true);
         setTimeout(() => router.push('/mes-ventes'), 2000);
       } else {
-        alert(`Erreur: ${data.error || "Impossible de publier l'annonce"}`);
+        // Detailed error messages from API
+        const errorMsg = data.details 
+          ? Object.entries(data.details).map(([field, errors]: [string, any]) => `${field}: ${errors.join(', ')}`).join('\n')
+          : data.error;
+        
+        alert(`Erreur de publication :\n${errorMsg || "Impossible de publier l'annonce"}`);
       }
     } catch (err) {
-      alert("Une erreur de réseau est survenue.");
+      alert("Une erreur de réseau est survenue. Vérifiez votre connexion.");
     } finally {
       setIsSubmitting(false);
     }
@@ -439,9 +466,14 @@ export default function CreateListing() {
                     {isSubmitting ? 'Envoi...' : 'Lancer la vente'}
                   </button>
                   {!validateAll() && (
-                    <p className="text-center text-gray-400 font-medium mt-4 text-sm animate-pulse italic">
-                      Complétez tous les champs pour activer le bouton
-                    </p>
+                    <div className="mt-4 p-4 bg-amber-50 rounded-2xl border border-amber-100 animate-pulse">
+                      <p className="text-center text-amber-700 font-bold text-xs uppercase tracking-widest mb-2">
+                        Champs requis manquants :
+                      </p>
+                      <p className="text-center text-amber-600 text-[10px] font-medium italic">
+                        {getMissingFields().join(' • ')}
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
