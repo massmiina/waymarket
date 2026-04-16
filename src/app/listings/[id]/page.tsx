@@ -258,7 +258,10 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
                 </div>
               )}
 
-              <button className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-white hover:shadow-lg rounded-2xl transition-all group font-bold text-sm text-slate-600">
+              <button 
+                onClick={() => router.push(`/vendeur/${listing.sellerId}`)}
+                className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-white hover:shadow-lg rounded-2xl transition-all group font-bold text-sm text-slate-600"
+              >
                 Toutes les annonces
                 <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
               </button>
