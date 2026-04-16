@@ -25,7 +25,7 @@ import {
   Euro,
   Sparkles
 } from 'lucide-react';
-import { UploadDropzone } from "@/lib/uploadthing";
+import { useUploadThing } from "@/lib/uploadthing";
 import "@uploadthing/react/styles.css";
 
 const CATEGORIES: { id: Category; label: string; icon: React.FC<any> }[] = [
@@ -62,6 +62,42 @@ export default function CreateListing() {
   const [images, setImages] = useState<string[]>([]);
   const [details, setDetails] = useState<Record<string, string | number | boolean>>({});
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { startUpload } = useUploadThing("imageUploader", {
+    onClientUploadComplete: (res) => {
+      if (res) {
+        setImages(prev => [...prev, ...res.map(f => f.url)]);
+      }
+      setIsUploading(false);
+      setUploadProgress(0);
+    },
+    onUploadError: (error) => {
+      alert(`Erreur d'upload: ${error.message}`);
+      setIsUploading(false);
+      setUploadProgress(0);
+    },
+    onUploadProgress: (p) => {
+      setUploadProgress(p);
+    }
+  });
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    const limit = currentUser?.isPro ? 10 : 3;
+    if (images.length + files.length > limit) {
+      alert(`Vous ne pouvez pas ajouter plus de ${limit} photos.`);
+      return;
+    }
+
+    setIsUploading(true);
+    await startUpload(files);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   // Auto-scroll to next section
   const detailsRef = useRef<HTMLDivElement>(null);
@@ -136,10 +172,23 @@ export default function CreateListing() {
     );
   }
 
+  const maxPhotos = currentUser?.isPro ? 10 : 3;
+  const photoSlots = Array.from({ length: maxPhotos });
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <Navbar />
       
+      {/* Hidden File Input */}
+      <input 
+        type="file" 
+        multiple 
+        accept="image/*" 
+        ref={fileInputRef} 
+        onChange={handleFileChange} 
+        className="hidden" 
+      />
+
       {/* Dynamic Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-100/40 rounded-full blur-[120px]"></div>
@@ -211,41 +260,64 @@ export default function CreateListing() {
                 </div>
 
                 <div className="space-y-6">
-                  {images.length < (currentUser?.isPro ? 10 : 3) && (
-                    <UploadDropzone
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res) => {
-                        if (res) {
-                          setImages(prev => [...prev, ...res.map(f => f.url)]);
-                          setIsUploading(false);
-                        }
-                      }}
-                      onUploadError={(error) => {
-                        alert(`Erreur: ${error.message}`);
-                        setIsUploading(false);
-                      }}
-                      onUploadBegin={() => setIsUploading(true)}
-                      appearance={{
-                        container: "border-3 border-pink-100 border-dashed rounded-[24px] bg-pink-50/30 hover:bg-pink-50 transition-colors py-12",
-                        button: "bg-pink-500 hover:bg-pink-600 rounded-2xl px-8 font-bold text-sm",
-                        label: "text-pink-600 font-bold text-lg"
-                      }}
-                    />
-                  )}
+                  {/* Photo Gallery Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    {photoSlots.map((_, i) => {
+                      const imageUrl = images[i];
+                      const isFirst = i === 0;
+                      
+                      if (imageUrl) {
+                        return (
+                          <div key={i} className={`relative aspect-square rounded-2xl overflow-hidden group shadow-md border-2 border-white transition-all hover:scale-[1.02] ${isFirst ? 'md:col-span-2 md:row-span-2 ring-4 ring-indigo-100' : ''}`}>
+                            <img src={imageUrl} alt={`Photo ${i+1}`} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <button 
+                                onClick={() => setImages(prev => prev.filter((_, idx) => idx !== i))}
+                                className="bg-white/90 backdrop-blur-md p-2 rounded-xl text-red-500 shadow-lg hover:bg-red-500 hover:text-white transition-all transform hover:rotate-90"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                            {isFirst && (
+                              <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg">
+                                Principale
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {images.map((url, i) => (
-                      <div key={i} className="relative aspect-square rounded-[24px] overflow-hidden shadow-xl group border-4 border-white">
-                        <img src={url} alt="Aperçu" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                        <button 
-                          onClick={() => setImages(prev => prev.filter((_, idx) => idx !== i))}
-                          className="absolute top-3 right-3 bg-white/90 backdrop-blur-md p-2 rounded-xl text-red-500 shadow-lg hover:bg-red-500 hover:text-white transition-all transform hover:rotate-90"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                        {i === 0 && <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg">Principal</span>}
-                      </div>
-                    ))}
+                      // Only show the next available slot as a button
+                      if (i === images.length) {
+                        return (
+                          <button
+                            key={i}
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploading}
+                            className={`aspect-square rounded-2xl border-2 border-dashed border-pink-200 bg-pink-50/30 flex flex-col items-center justify-center text-pink-400 gap-2 transition-all hover:bg-pink-50 hover:border-pink-300 group ${isFirst ? 'md:col-span-2 md:row-span-2 ring-4 ring-pink-50' : ''}`}
+                          >
+                            {isUploading ? (
+                              <div className="flex flex-col items-center gap-2">
+                                <div className="w-8 h-8 border-4 border-pink-400 border-t-transparent rounded-full animate-spin"></div>
+                                <span className="text-[10px] font-black uppercase tracking-widest">{uploadProgress}%</span>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center group-hover:scale-110 transition-transform">
+                                  <UploadCloud className="w-6 h-6" />
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-widest">Ajouter</span>
+                              </>
+                            )}
+                          </button>
+                        );
+                      }
+
+                      // Placeholder slots
+                      return (
+                        <div key={i} className="aspect-square rounded-2xl border-2 border-gray-100 bg-gray-50/50"></div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
