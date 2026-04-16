@@ -201,7 +201,7 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
 
         if (syncRes.ok) {
           const syncedUser = await syncRes.json();
-          console.log('User synced successfully:', syncedUser.id);
+          console.log('✅ User synced successfully:', syncedUser.id);
           
           // Force admin status if email matches
           if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
@@ -219,10 +219,21 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
           if (favRes.ok) setFavorites(await favRes.json());
           if (convsRes.ok) setConversations(await convsRes.json());
         } else {
-          const errorData = await syncRes.json();
-          console.error('Sync failed with status:', syncRes.status, errorData);
-          // Fallback to minimal user object to avoid complete block if DB is just busy
-          // but marking as not fully synced for actions that require DB existence
+          try {
+            const errorData = await syncRes.json();
+            console.error('❌ SYNC CRASH DETAILS:', {
+              status: syncRes.status,
+              error: errorData.error,
+              details: errorData.details,
+              code: errorData.code
+            });
+            
+            // alert(`Alerte Sync: ${errorData.details || 'Erreur inconnue'}`);
+          } catch (e) {
+            console.error('❌ Sync failed with status:', syncRes.status);
+          }
+          
+          // Fallback
           setCurrentUser({
             id: clerkUser.id,
             name: clerkUser.fullName || clerkUser.primaryEmailAddress?.emailAddress?.split('@')[0] || 'Utilisateur',
@@ -234,7 +245,7 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
           });
         }
       } catch (err) {
-        console.error("Sync fetch error:", err);
+        console.error("❌ CRITICAL FETCH ERROR during sync:", err);
       }
     }
 

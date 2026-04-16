@@ -17,22 +17,33 @@ export async function POST(request: Request) {
       where: { id: String(id) },
       update: {
         email: String(email).toLowerCase().trim(),
-        name: String(name || email.split('@')[0]),
+        name: String(name || email.split('@')[0]).substring(0, 100), // Safety limit
         avatarUrl: avatarUrl ? String(avatarUrl) : null,
         role: finalRole,
       },
       create: {
         id: String(id),
         email: String(email).toLowerCase().trim(),
-        name: String(name || email.split('@')[0]),
+        name: String(name || email.split('@')[0]).substring(0, 100), // Safety limit
         avatarUrl: avatarUrl ? String(avatarUrl) : null,
         role: finalRole,
       }
     });
 
+    console.log('✅ User sync successful for:', user.id);
     return NextResponse.json(user);
   } catch (error: any) {
-    console.error('Sync error:', error);
-    return NextResponse.json({ error: 'Sync failed' }, { status: 500 });
+    console.error('❌ CRITICAL SYNC ERROR:', {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack
+    });
+    
+    return NextResponse.json({ 
+      error: 'Sync failed', 
+      details: error.message || 'Unknown database error',
+      code: error.code 
+    }, { status: 500 });
   }
 }
