@@ -7,7 +7,7 @@ import ListingCard from '@/components/ListingCard';
 import ListingCardSkeleton from '@/components/ListingCardSkeleton';
 import CategoryFilter from '@/components/CategoryFilter';
 import { useMarket, Category } from '@/contexts/MarketContext';
-import { Search, SlidersHorizontal, MapPin, Euro, Calendar, Gauge, Crown, Zap } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Euro, Calendar, Gauge } from 'lucide-react';
 import { CAR_DATA, FUEL_TYPES, GEARBOX_TYPES, COLORS, CLOTHING_SIZES } from '@/lib/constants';
 
 export default function Home() {
@@ -350,39 +350,6 @@ export default function Home() {
             <p className="text-slate-400 text-sm font-medium">Aucune annonce ne correspond à votre recherche pour le moment.</p>
           </div>
         )}
-        {/* PREMIUM PRO SECTION */}
-        <section className="mt-24 sm:mt-32 mb-12 sm:mb-20">
-          <div className="relative overflow-hidden bg-slate-900 rounded-[3rem] p-8 sm:p-16 text-center shadow-2xl shadow-slate-900/10">
-            {/* Background Atmosphere */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-glacier rounded-full blur-[120px] opacity-20 -mr-32 -mt-32"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-slate-400 rounded-full blur-[120px] opacity-10 -ml-32 -mb-32"></div>
-            
-            <div className="relative z-10 max-w-2xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-glacier/10 border border-glacier/20 rounded-full text-glacier text-[10px] font-black uppercase tracking-[0.2em] mb-8">
-                <Crown className="w-3.5 h-3.5" />
-                Way Market Elite
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-black text-white mb-6 tracking-tight leading-tight">
-                Passez au niveau <span className="text-glacier text-shadow-sm shadow-glacier/50">supérieur</span>
-              </h2>
-              <p className="text-slate-400 font-medium mb-10 text-base sm:text-lg">
-                Visibilité boostée, badge de confiance et outils exclusifs. Pour une durée limitée, le mode Pro est gratuit pour les 1000 premiers membres.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link 
-                  href="/pro"
-                  className="w-full sm:w-auto px-10 py-4 bg-glacier text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-slate-900 transition-all shadow-xl shadow-glacier/20 active:scale-95"
-                >
-                  Découvrir les avantages
-                </Link>
-                <div className="flex items-center gap-2 text-slate-500 font-bold text-[10px] uppercase tracking-widest">
-                  <Zap className="w-4 h-4 text-glacier" />
-                  Activation Instantanée
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
       </main>
     </div>
