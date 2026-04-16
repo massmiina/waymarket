@@ -39,6 +39,28 @@ const CATEGORIES: { id: Category; label: string; icon: React.FC<any> }[] = [
   { id: 'Autres', label: 'Autres', icon: Box },
 ];
 
+const CAR_DATA: Record<string, string[]> = {
+  "Peugeot": ["208", "308", "508", "2008", "3008", "5008", "Partner", "Expert", "Autre"],
+  "Renault": ["Clio", "Megane", "Captur", "Kadjar", "Arkana", "Twingo", "Zoe", "Kangoo", "Autre"],
+  "Citroën": ["C1", "C3", "C4", "C5", "Berlingo", "Picasso", "Autre"],
+  "Volkswagen": ["Polo", "Golf", "Passat", "Tiguan", "Touareg", "ID.3", "ID.4", "Autre"],
+  "Audi": ["A1", "A3", "A4", "A6", "Q2", "Q3", "Q5", "e-tron", "Autre"],
+  "BMW": ["Série 1", "Série 3", "Série 5", "X1", "X3", "X5", "i3", "Autre"],
+  "Mercedes-Benz": ["Classe A", "Classe C", "Classe E", "GLA", "GLC", "GLE", "Autre"],
+  "Toyota": ["Yaris", "Corolla", "Auris", "RAV4", "C-HR", "Aygo", "Autre"],
+  "Ford": ["Fiesta", "Focus", "Puma", "Kuga", "Mondeo", "Autre"],
+  "Dacia": ["Sandero", "Duster", "Lodgy", "Jogger", "Autre"],
+  "Fiat": ["500", "Panda", "Tipo", "Ducato", "Autre"],
+  "Opel": ["Corsa", "Astra", "Mokka", "Grandland", "Autre"],
+  "Hyundai": ["i10", "i20", "i30", "Tucson", "Kona", "Autre"],
+  "Kia": ["Picanto", "Rio", "Ceed", "Sportage", "Niro", "Autre"],
+  "Tesla": ["Model 3", "Model Y", "Model S", "Model X"],
+  "Nissan": ["Micra", "Juke", "Qashqai", "Leaf", "Autre"],
+  "Mini": ["Hatch", "Countryman", "Clubman", "Autre"],
+  "Volvo": ["XC40", "XC60", "XC90", "V40", "Autre"],
+  "Autre": ["Modèle personnalisé"]
+};
+
 const CONDITIONS = [
   "Neuf",
   "Très bon état",
@@ -117,7 +139,11 @@ export default function CreateListing() {
   };
 
   const validateAll = () => {
-    return !!category && !!title.trim() && !!description.trim() && !!condition && images.length > 0 && price !== '' && !!location.trim();
+    const basic = !!category && !!title.trim() && !!description.trim() && !!condition && images.length > 0 && price !== '' && !!location.trim();
+    if (category === 'Véhicules') {
+      return basic && !!details.brand && !!details.model && !!details.mileage && !!details.year;
+    }
+    return basic;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -323,7 +349,7 @@ export default function CreateListing() {
               </div>
             </div>
 
-            {/* SECTION 3: CONTENT */}
+            {/* SECTION 3: CONTENT & DESCRIPTION */}
             <div className={`transition-all duration-500 ${images.length > 0 ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`} ref={detailsRef}>
               <div className="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-indigo-100/50 rounded-[32px] p-8 md:p-10">
                 <div className="flex items-center gap-4 mb-8">
@@ -332,11 +358,51 @@ export default function CreateListing() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900">3. Description</h2>
-                    <p className="text-gray-500 font-medium">Donnez envie aux acheteurs</p>
+                    <p className="text-gray-500 font-medium">Informations essentielles sur votre offre</p>
                   </div>
                 </div>
 
                 <div className="grid gap-6">
+                  {/* --- INTEGRATED VEHICLE SELECTORS --- */}
+                  {category === 'Véhicules' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-indigo-50/50 rounded-[24px] border border-indigo-100 mb-4 animate-in fade-in zoom-in duration-300">
+                      <div>
+                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Marque</label>
+                        <select 
+                          value={String(details.brand || '')} 
+                          onChange={e => {
+                            handleDetailChange('brand', e.target.value);
+                            handleDetailChange('model', ''); // Reset model on brand change
+                          }} 
+                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none"
+                        >
+                          <option value="">Sélectionner une marque</option>
+                          {Object.keys(CAR_DATA).sort().map(brand => <option key={brand} value={brand}>{brand}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Modèle</label>
+                        <select 
+                          value={String(details.model || '')} 
+                          onChange={e => handleDetailChange('model', e.target.value)} 
+                          disabled={!details.brand}
+                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none disabled:bg-gray-50 disabled:text-gray-400"
+                        >
+                          <option value="">{details.brand ? 'Sélectionner un modèle' : 'Choisissez d\'abord la marque'}</option>
+                          {details.brand && CAR_DATA[String(details.brand)]?.map(model => <option key={model} value={model}>{model}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Kilométrage</label>
+                        <input type="number" value={details.mileage as number || ''} onChange={e => handleDetailChange('mileage', Number(e.target.value))} className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 85000" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Année</label>
+                        <input type="number" value={details.year as number || ''} onChange={e => handleDetailChange('year', Number(e.target.value))} className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 2018" />
+                      </div>
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Titre de l&apos;offre</label>
                     <input 
@@ -344,7 +410,7 @@ export default function CreateListing() {
                       value={title} 
                       onChange={e => setTitle(e.target.value)} 
                       className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 text-gray-900 font-bold focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all placeholder:text-gray-300" 
-                      placeholder="Ex: Sac à dos vintage en cuir" 
+                      placeholder={category === 'Véhicules' ? "Ex: Peugeot 208 1.2 PureTech" : "Ex: Sac à dos vintage en cuir"} 
                     />
                   </div>
 
@@ -420,9 +486,9 @@ export default function CreateListing() {
               </div>
             </div>
 
-            {/* SECTION 4: SPECIFIC DETAILS */}
-            {category && (
-              <div className="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-indigo-100/50 rounded-[32px] p-8 md:p-10">
+            {/* SECTION 4: REMAINING SPECIFIC DETAILS (Non-Vehicles) */}
+            {category && category !== 'Véhicules' && (
+              <div className="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-indigo-100/50 rounded-[32px] p-8 md:p-10 animate-in fade-in duration-500">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="w-12 h-12 bg-violet-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-violet-200">
                     <Sparkles className="w-6 h-6" />
@@ -434,45 +500,6 @@ export default function CreateListing() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {category === 'Véhicules' && (
-                    <>
-                      <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Marque</label>
-                        <input type="text" value={String(details.brand || '')} onChange={e => handleDetailChange('brand', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: BMW" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Modèle</label>
-                        <input type="text" value={String(details.model || '')} onChange={e => handleDetailChange('model', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: Série 3" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Kilométrage</label>
-                        <input type="number" value={details.mileage as number || ''} onChange={e => handleDetailChange('mileage', Number(e.target.value))} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 85000" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Année</label>
-                        <input type="number" value={details.year as number || ''} onChange={e => handleDetailChange('year', Number(e.target.value))} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 2018" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Carburant</label>
-                        <select value={String(details.fuelType || '')} onChange={e => handleDetailChange('fuelType', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none">
-                          <option value="">Sélectionner</option>
-                          <option value="Essence">Essence</option>
-                          <option value="Diesel">Diesel</option>
-                          <option value="Hybride">Hybride</option>
-                          <option value="Électrique">Électrique</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Boîte</label>
-                        <select value={String(details.gearbox || '')} onChange={e => handleDetailChange('gearbox', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none">
-                          <option value="">Sélectionner</option>
-                          <option value="Manuelle">Manuelle</option>
-                          <option value="Automatique">Automatique</option>
-                        </select>
-                      </div>
-                    </>
-                  )}
-
                   {category === 'Immobilier' && (
                     <>
                       <div>
@@ -554,7 +581,7 @@ export default function CreateListing() {
                     )}
                   </div>
                   <h4 className="text-2xl font-black text-gray-900 leading-tight mb-2 truncate">
-                    {title || 'Titre de l&apos;annonce'}
+                    {(category === 'Véhicules' && details.brand) ? `${details.brand} ${details.model || ''}` : (title || 'Titre de l\'annonce')}
                   </h4>
                   <div className="flex items-center gap-2 text-gray-400">
                     <MapPin className="w-4 h-4" />
