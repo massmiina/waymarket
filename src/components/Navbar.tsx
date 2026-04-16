@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useMarket, Message } from '@/contexts/MarketContext';
 import Image from 'next/image';
+import MobileDrawer from './MobileDrawer';
 
 import { Show, UserButton, SignInButton } from '@clerk/nextjs';
 
@@ -24,6 +25,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { currentUser, favorites, messages, isLoading: isMarketLoading } = useMarket();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const unreadMessagesCount = messages.filter(
     (m: Message) => m.receiverId === currentUser?.id && !m.read
@@ -164,15 +166,21 @@ export default function Navbar() {
                 <ShieldAlert className="h-5 w-5" />
               </Link>
              )}
-            <Link
-              href="/menu"
-              className="p-2 text-slate-400"
+            <button
+              onClick={() => setIsDrawerOpen(true)}
+              className="p-2 text-slate-400 active:scale-90 transition-transform"
             >
               <Menu className="h-6 w-6" />
-            </Link>
+            </button>
           </div>
         </div>
       </div>
+      
+      {/* Premium Mobile Drawer */}
+      <MobileDrawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
+      />
     </nav>
   );
 }
