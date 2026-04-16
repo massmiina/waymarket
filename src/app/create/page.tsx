@@ -26,7 +26,18 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useUploadThing } from "@/lib/uploadthing";
-import { CATEGORIES, CAR_DATA, CONDITIONS, FUEL_TYPES, GEARBOX_TYPES } from "@/lib/constants";
+import { 
+  CATEGORIES, 
+  CAR_DATA, 
+  CONDITIONS, 
+  FUEL_TYPES, 
+  GEARBOX_TYPES,
+  COLORS,
+  CRITAIR,
+  CLOTHING_SIZES,
+  STORAGE_CAPACITIES,
+  HEATING_TYPES
+} from "@/lib/constants";
 import "@uploadthing/react/styles.css";
 
 export default function CreateListing() {
@@ -114,7 +125,28 @@ export default function CreateListing() {
       if (!details.year) missing.push("Année");
       if (!details.fuelType) missing.push("Carburant");
       if (!details.gearbox) missing.push("Boîte à vitesse");
+      if (!details.color) missing.push("Couleur");
+      if (!details.critair) missing.push("Crit'Air");
     }
+
+    if (category === 'Immobilier') {
+      if (!details.type) missing.push("Type de bien");
+      if (!details.surfaceArea) missing.push("Surface");
+      if (!details.rooms) missing.push("Pièces");
+      if (!details.heating) missing.push("Chauffage");
+    }
+
+    if (category === 'Électronique') {
+      if (!details.brand) missing.push("Marque");
+      if (!details.model) missing.push("Modèle");
+      if (!details.storage) missing.push("Capacité");
+    }
+
+    if (category === 'Vêtements') {
+      if (!details.size) missing.push("Taille");
+      if (!details.brand) missing.push("Marque");
+    }
+    
     return missing;
   };
 
@@ -408,6 +440,174 @@ export default function CreateListing() {
                         >
                           <option value="">Sélectionner</option>
                           {GEARBOX_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Couleur</label>
+                        <select 
+                          value={String(details.color || '')} 
+                          onChange={e => handleDetailChange('color', e.target.value)} 
+                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Sélectionner</option>
+                          {COLORS.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Crit&apos;Air</label>
+                        <select 
+                          value={String(details.critair || '')} 
+                          onChange={e => handleDetailChange('critair', e.target.value)} 
+                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Sélectionner</option>
+                          {CRITAIR.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Puissance (ch)</label>
+                        <input type="number" value={details.hp as number || ''} onChange={e => handleDetailChange('hp', Number(e.target.value))} className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 110" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Places</label>
+                        <input type="number" value={details.seats as number || ''} onChange={e => handleDetailChange('seats', Number(e.target.value))} className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="5" />
+                      </div>
+                    </div>
+                  )}
+
+                  {category === 'Immobilier' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-amber-50/50 rounded-[24px] border border-amber-100 mb-4 animate-in fade-in zoom-in duration-300">
+                      <div>
+                        <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">Type de bien</label>
+                        <input type="text" value={String(details.type || '')} onChange={e => handleDetailChange('type', e.target.value)} className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all" placeholder="Maison, Appartement..." />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">Surface (m²)</label>
+                          <input type="number" value={details.surfaceArea as number || ''} onChange={e => handleDetailChange('surfaceArea', Number(e.target.value))} className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all" placeholder="75" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">Pièces</label>
+                          <input type="number" value={details.rooms as number || ''} onChange={e => handleDetailChange('rooms', Number(e.target.value))} className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all" placeholder="3" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">Chauffage</label>
+                        <select 
+                          value={String(details.heating || '')} 
+                          onChange={e => handleDetailChange('heating', e.target.value)} 
+                          className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Sélectionner</option>
+                          {HEATING_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">Étage</label>
+                          <input type="number" value={details.floor as number || ''} onChange={e => handleDetailChange('floor', Number(e.target.value))} className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all" placeholder="2" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">DPE</label>
+                          <input type="text" value={String(details.energyClass || '')} onChange={e => handleDetailChange('energyClass', e.target.value)} className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all" placeholder="A, B, C..." />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {category === 'Électronique' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-blue-50/50 rounded-[24px] border border-blue-100 mb-4 animate-in fade-in zoom-in duration-300">
+                      <div>
+                        <label className="block text-xs font-black text-blue-500 uppercase tracking-widest mb-2 ml-1">Marque</label>
+                        <input type="text" value={String(details.brand || '')} onChange={e => handleDetailChange('brand', e.target.value)} className="w-full bg-white border-2 border-blue-50 rounded-2xl p-4 font-bold focus:border-blue-600 outline-none transition-all" placeholder="Apple, Samsung..." />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-blue-500 uppercase tracking-widest mb-2 ml-1">Modèle</label>
+                        <input type="text" value={String(details.model || '')} onChange={e => handleDetailChange('model', e.target.value)} className="w-full bg-white border-2 border-blue-50 rounded-2xl p-4 font-bold focus:border-blue-600 outline-none transition-all" placeholder="iPhone 15, Galaxy S23..." />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-blue-500 uppercase tracking-widest mb-2 ml-1">Capacité</label>
+                        <select 
+                          value={String(details.storage || '')} 
+                          onChange={e => handleDetailChange('storage', e.target.value)} 
+                          className="w-full bg-white border-2 border-blue-50 rounded-2xl p-4 font-bold focus:border-blue-600 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Sélectionner</option>
+                          {STORAGE_CAPACITIES.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-blue-500 uppercase tracking-widest mb-2 ml-1">Couleur</label>
+                        <select 
+                          value={String(details.color || '')} 
+                          onChange={e => handleDetailChange('color', e.target.value)} 
+                          className="w-full bg-white border-2 border-blue-50 rounded-2xl p-4 font-bold focus:border-blue-600 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Sélectionner</option>
+                          {COLORS.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  {category === 'Vêtements' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-pink-50/50 rounded-[24px] border border-pink-100 mb-4 animate-in fade-in zoom-in duration-300">
+                      <div>
+                        <label className="block text-xs font-black text-pink-500 uppercase tracking-widest mb-2 ml-1">Taille</label>
+                        <select 
+                          value={String(details.size || '')} 
+                          onChange={e => handleDetailChange('size', e.target.value)} 
+                          className="w-full bg-white border-2 border-pink-50 rounded-2xl p-4 font-bold focus:border-pink-600 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Sélectionner</option>
+                          {CLOTHING_SIZES.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-pink-500 uppercase tracking-widest mb-2 ml-1">Marque</label>
+                        <input type="text" value={String(details.brand || '')} onChange={e => handleDetailChange('brand', e.target.value)} className="w-full bg-white border-2 border-pink-50 rounded-2xl p-4 font-bold focus:border-pink-600 outline-none transition-all" placeholder="Nike, Zara, Gucci..." />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-pink-500 uppercase tracking-widest mb-2 ml-1">Couleur</label>
+                        <select 
+                          value={String(details.color || '')} 
+                          onChange={e => handleDetailChange('color', e.target.value)} 
+                          className="w-full bg-white border-2 border-pink-50 rounded-2xl p-4 font-bold focus:border-pink-600 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Sélectionner</option>
+                          {COLORS.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-pink-500 uppercase tracking-widest mb-2 ml-1">Matière</label>
+                        <input type="text" value={String(details.material || '')} onChange={e => handleDetailChange('material', e.target.value)} className="w-full bg-white border-2 border-pink-50 rounded-2xl p-4 font-bold focus:border-pink-600 outline-none transition-all" placeholder="Coton, Lin, Cuir..." />
+                      </div>
+                    </div>
+                  )}
+
+                  {category === 'Mobilier' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-violet-50/50 rounded-[24px] border border-violet-100 mb-4 animate-in fade-in zoom-in duration-300">
+                      <div>
+                        <label className="block text-xs font-black text-violet-500 uppercase tracking-widest mb-2 ml-1">Matière</label>
+                        <input type="text" value={String(details.material || '')} onChange={e => handleDetailChange('material', e.target.value)} className="w-full bg-white border-2 border-violet-50 rounded-2xl p-4 font-bold focus:border-violet-600 outline-none transition-all" placeholder="Bois, Métal, Velours..." />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-violet-500 uppercase tracking-widest mb-2 ml-1">Dimensions</label>
+                        <input type="text" value={String(details.dimensions || '')} onChange={e => handleDetailChange('dimensions', e.target.value)} className="w-full bg-white border-2 border-violet-50 rounded-2xl p-4 font-bold focus:border-violet-600 outline-none transition-all" placeholder="120 x 80 x 45 cm" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-violet-500 uppercase tracking-widest mb-2 ml-1">Style</label>
+                        <input type="text" value={String(details.style || '')} onChange={e => handleDetailChange('style', e.target.value)} className="w-full bg-white border-2 border-violet-50 rounded-2xl p-4 font-bold focus:border-violet-600 outline-none transition-all" placeholder="Vintage, Moderne, Industriel..." />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-violet-500 uppercase tracking-widest mb-2 ml-1">Couleur</label>
+                        <select 
+                          value={String(details.color || '')} 
+                          onChange={e => handleDetailChange('color', e.target.value)} 
+                          className="w-full bg-white border-2 border-violet-50 rounded-2xl p-4 font-bold focus:border-violet-600 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Sélectionner</option>
+                          {COLORS.map(type => <option key={type} value={type}>{type}</option>)}
                         </select>
                       </div>
                     </div>

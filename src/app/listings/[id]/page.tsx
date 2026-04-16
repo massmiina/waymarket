@@ -20,7 +20,19 @@ import {
   MessageCircle,
   Clock,
   ChevronRight,
-  CheckCircle
+  CheckCircle,
+  Palette,
+  Activity,
+  Leaf,
+  Users,
+  HardDrive,
+  Battery,
+  Ruler,
+  Home,
+  Box,
+  Layers,
+  Thermometer,
+  Info
 } from 'lucide-react';
 import { useMarket } from '@/contexts/MarketContext';
 
@@ -84,11 +96,38 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
 
   // Define specs with icons
   const specs = [];
+  
+  // COMMON
+  if (details.condition) specs.push({ label: 'État', value: details.condition, icon: Sparkles });
+  if (details.color) specs.push({ label: 'Couleur', value: details.color, icon: Palette });
+
+  // VEHICLES
   if (details.mileage) specs.push({ label: 'Kilométrage', value: `${details.mileage} km`, icon: Gauge });
   if (details.year) specs.push({ label: 'Année', value: details.year, icon: Calendar });
   if (details.fuelType) specs.push({ label: 'Carburant', value: details.fuelType, icon: Fuel });
-  if (details.gearbox) specs.push({ label: 'Boîte', value: details.gearbox, icon: Zap });
-  if (details.condition) specs.push({ label: 'État', value: details.condition, icon: Sparkles });
+  if (details.gearbox) specs.push({ label: 'Boîte', value: details.gearbox, icon: Activity });
+  if (details.critair) specs.push({ label: 'Crit\'Air', value: details.critair, icon: Leaf });
+  if (details.hp) specs.push({ label: 'Puissance', value: `${details.hp} ch`, icon: Zap });
+  if (details.seats) specs.push({ label: 'Places', value: details.seats, icon: Users });
+
+  // REAL ESTATE
+  if (details.surfaceArea) specs.push({ label: 'Surface', value: `${details.surfaceArea} m²`, icon: Home });
+  if (details.rooms) specs.push({ label: 'Pièces', value: details.rooms, icon: Box });
+  if (details.floor) specs.push({ label: 'Étage', value: details.floor, icon: Layers });
+  if (details.heating) specs.push({ label: 'Chauffage', value: details.heating, icon: Thermometer });
+  if (details.energyClass) specs.push({ label: 'DPE', value: details.energyClass, icon: Info });
+
+  // ELECTRONICS
+  if (details.storage) specs.push({ label: 'Capacité', value: details.storage, icon: HardDrive });
+  if (details.battery) specs.push({ label: 'Batterie', value: `${details.battery}%`, icon: Battery });
+
+  // CLOTHING
+  if (details.size) specs.push({ label: 'Taille', value: details.size, icon: Ruler });
+  if (details.material) specs.push({ label: 'Matière', value: details.material, icon: Box });
+
+  // FURNITURE
+  if (details.dimensions) specs.push({ label: 'Dimensions', value: details.dimensions, icon: Ruler });
+  if (details.style) specs.push({ label: 'Style', value: details.style, icon: Sparkles });
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">

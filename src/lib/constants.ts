@@ -61,3 +61,55 @@ export const GEARBOX_TYPES = [
   "Manuelle",
   "Automatique"
 ];
+
+export const COLORS = [
+  "Noir",
+  "Blanc",
+  "Gris",
+  "Bleu",
+  "Rouge",
+  "Vert",
+  "Jaune",
+  "Argent",
+  "Beige",
+  "Marron",
+  "Orange",
+  "Rose",
+  "Autre"
+];
+
+export const CRITAIR = [
+  "Électrique",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+];
+
+export const CLOTHING_SIZES = [
+  "XXS", "XS", "S", "M", "L", "XL", "XXL", "3XL",
+  "34", "36", "38", "40", "42", "44", "46", "48",
+  "28", "29", "30", "31", "32", "33", "34", "36"
+];
+
+export const STORAGE_CAPACITIES = [
+  "16 Go",
+  "32 Go",
+  "64 Go",
+  "128 Go",
+  "256 Go",
+  "512 Go",
+  "1 To",
+  "2 To"
+];
+
+export const HEATING_TYPES = [
+  "Électrique",
+  "Gaz",
+  "Fioul",
+  "Bois",
+  "Pompe à chaleur",
+  "Solaire",
+  "Collectif"
+];

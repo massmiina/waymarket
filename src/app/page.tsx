@@ -7,7 +7,7 @@ import ListingCardSkeleton from '@/components/ListingCardSkeleton';
 import CategoryFilter from '@/components/CategoryFilter';
 import { useMarket, Category } from '@/contexts/MarketContext';
 import { Search, SlidersHorizontal, MapPin, Euro, Calendar, Gauge } from 'lucide-react';
-import { CAR_DATA, FUEL_TYPES, GEARBOX_TYPES } from '@/lib/constants';
+import { CAR_DATA, FUEL_TYPES, GEARBOX_TYPES, COLORS, CLOTHING_SIZES } from '@/lib/constants';
 
 export default function Home() {
   const { listings, isLoading, metadata, fetchMoreListings } = useMarket();
@@ -25,6 +25,8 @@ export default function Home() {
   const [minYear, setMinYear] = useState('');
   const [fuelQuery, setFuelQuery] = useState('');
   const [gearboxQuery, setGearboxQuery] = useState('');
+  const [colorQuery, setColorQuery] = useState('');
+  const [sizeQuery, setSizeQuery] = useState('');
 
   const handleLoadMore = async () => {
     setIsMoreLoading(true);
@@ -48,11 +50,17 @@ export default function Home() {
       const matchesYear = minYear === '' || (details.year as number) >= Number(minYear);
       const matchesFuel = fuelQuery === '' || details.fuelType === fuelQuery;
       const matchesGearbox = gearboxQuery === '' || details.gearbox === gearboxQuery;
+      const matchesColor = colorQuery === '' || details.color === colorQuery;
       
-      return matchesCategory && matchesSearch && matchesPrice && matchesLocation && matchesBrand && matchesModel && matchesMileage && matchesYear && matchesFuel && matchesGearbox;
+      return matchesCategory && matchesSearch && matchesPrice && matchesLocation && matchesBrand && matchesModel && matchesMileage && matchesYear && matchesFuel && matchesGearbox && matchesColor;
     }
+
+    // Generic Color & Size Filtering
+    const details = listing.details || {};
+    const matchesColor = colorQuery === '' || details.color === colorQuery;
+    const matchesSize = sizeQuery === '' || details.size === sizeQuery;
                           
-    return matchesCategory && matchesSearch && matchesPrice && matchesLocation;
+    return matchesCategory && matchesSearch && matchesPrice && matchesLocation && matchesColor && matchesSize;
   }).sort((a, b) => {
     const aPro = a.seller?.isPro ? 1 : 0;
     const bPro = b.seller?.isPro ? 1 : 0;
@@ -206,6 +214,35 @@ export default function Home() {
                   </div>
                 </>
               )}
+
+              {/* Generic Filters (Color for most, Size for clothing) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-50">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Couleur</label>
+                  <select
+                    value={colorQuery}
+                    onChange={(e) => setColorQuery(e.target.value)}
+                    className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none appearance-none cursor-pointer"
+                  >
+                    <option value="">Toutes</option>
+                    {COLORS.map(color => <option key={color} value={color}>{color}</option>)}
+                  </select>
+                </div>
+
+                {activeCategory === 'Vêtements' && (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Taille</label>
+                    <select
+                      value={sizeQuery}
+                      onChange={(e) => setSizeQuery(e.target.value)}
+                      className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none appearance-none cursor-pointer"
+                    >
+                      <option value="">Toutes</option>
+                      {CLOTHING_SIZES.map(size => <option key={size} value={size}>{size}</option>)}
+                    </select>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Second Row for Vehicle details if Category is Véhicules */}
@@ -251,6 +288,8 @@ export default function Home() {
                 setMinYear('');
                 setFuelQuery('');
                 setGearboxQuery('');
+                setColorQuery('');
+                setSizeQuery('');
               }} />
             </div>
           </div>
