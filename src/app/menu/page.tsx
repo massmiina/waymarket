@@ -129,6 +129,15 @@ export default function MenuPage() {
                 description="Modifier vos préférences"
                 color="bg-gray-500 text-gray-600"
               />
+              <div className="col-span-2 sm:col-span-1">
+                <MenuCard 
+                  href="/pro" 
+                  icon={Zap} 
+                  label="Passer Pro" 
+                  description="Boostez votre visibilité"
+                  color="bg-yellow-500 text-yellow-600"
+                />
+              </div>
             </div>
           </div>
 
