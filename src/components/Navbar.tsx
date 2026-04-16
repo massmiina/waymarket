@@ -164,15 +164,9 @@ export default function Navbar() {
                 <ShieldAlert className="h-5 w-5" />
               </Link>
              )}
-             <Link
-              href="/create"
-              className="p-2 rounded-full bg-peaks text-white"
-            >
-              <PlusCircle className="h-5 w-5" />
-            </Link>
             <Link
               href="/menu"
-              className="p-2 text-slate-600"
+              className="p-2 text-slate-400"
             >
               <Menu className="h-6 w-6" />
             </Link>

@@ -77,23 +77,23 @@ export default function ListingCard({ listing }: ListingCardProps) {
         )}
       </div>
 
-      <Link href={`/listings/${listing.id}`} className="p-5 flex flex-col flex-grow">
-        <h3 className="font-bold text-slate-900 group-hover:text-glacier transition-colors line-clamp-2 leading-tight mb-2 text-lg">
+      <Link href={`/listings/${listing.id}`} className="p-3 sm:p-5 flex flex-col flex-grow">
+        <h3 className="font-bold text-slate-900 group-hover:text-glacier transition-colors line-clamp-2 leading-tight mb-1 sm:mb-2 text-sm sm:text-lg">
           {listing.title}
         </h3>
-        <div className="flex items-center gap-2 mb-4">
-          <p className="text-2xl font-black text-peaks tracking-tighter">{listing.price} €</p>
-          <div className="h-1 w-8 bg-glacier rounded-full opacity-60"></div>
+        <div className="flex items-center gap-2 mb-2 sm:mb-4">
+          <p className="text-lg sm:text-2xl font-black text-peaks tracking-tighter">{listing.price} €</p>
+          <div className="hidden sm:block h-1 w-8 bg-glacier rounded-full opacity-60"></div>
         </div>
         
-        <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 bg-slate-50 flex items-center justify-center rounded-lg">
-              <MapPin className="h-3 w-3 text-glacier" />
+        <div className="mt-auto pt-2 sm:pt-4 border-t border-slate-50 flex items-center justify-between text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="w-4 h-4 sm:w-5 sm:h-5 bg-slate-50 flex items-center justify-center rounded-lg">
+              <MapPin className="h-2.5 w-2.5 sm:h-3 sm:h-3 text-glacier" />
             </div>
-            <span className="truncate max-w-[100px]">{listing.location}</span>
+            <span className="truncate max-w-[60px] sm:max-w-[100px]">{listing.location}</span>
           </div>
-          <span className="bg-slate-50 px-2 py-0.5 rounded-md">
+          <span className="bg-slate-50 px-1.5 py-0.5 rounded-md hidden xxs:block">
             {new Date(listing.createdAt).toLocaleDateString('fr-FR', {
               day: 'numeric',
               month: 'short'

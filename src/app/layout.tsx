@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { MarketProvider } from "@/contexts/MarketContext";
+import MobileNavbar from "@/components/MobileNavbar";
 
 import { ClerkProvider } from '@clerk/nextjs'
 import { frFR } from '@clerk/localizations'
@@ -41,6 +42,7 @@ export default function RootLayout({
         <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">
           <MarketProvider>
             {children}
+            <MobileNavbar />
           </MarketProvider>
         </body>
       </html>
