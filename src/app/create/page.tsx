@@ -246,12 +246,12 @@ export default function CreateListing() {
         <div className="flex flex-col lg:flex-row gap-12">
           
           {/* Main Form Area */}
-          <div className="flex-1 space-y-8 pb-32">
-            <div className="mb-12">
-              <h1 className="text-5xl font-black text-gray-900 tracking-tight mb-4">
+          <div className="flex-1 space-y-6 sm:space-y-8 pb-32">
+            <div className="mb-8 sm:mb-12">
+              <h1 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight mb-2 sm:mb-4 leading-tight">
                 Vendre un <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">trésor</span>
               </h1>
-              <p className="text-xl text-gray-500 font-medium">Donnez une seconde vie à vos objets en quelques secondes.</p>
+              <p className="text-base sm:text-xl text-gray-500 font-medium">Postez votre annonce en quelques secondes.</p>
             </div>
 
             {/* SECTION 1: CATEGORY */}
