@@ -499,6 +499,7 @@ export default function CreateListing() {
             </button>
           ) : <div></div>}
 
+          {currentStep < 4 ? (
             <div className="flex flex-col items-end gap-2">
               {!validateStep1() && <span className="text-xs text-red-500 font-medium italic">Sélectionnez une catégorie</span>}
               {currentStep === 2 && !validateStep2() && <span className="text-xs text-red-500 font-medium italic">Remplissez tous les champs obligatoires (*)</span>}
