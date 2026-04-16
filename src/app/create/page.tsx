@@ -26,9 +26,6 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useUploadThing } from "@/lib/uploadthing";
-import "@uploadthing/react/styles.css";
-
-import { useUploadThing } from "@/lib/uploadthing";
 import { CATEGORIES, CAR_DATA, CONDITIONS } from "@/lib/constants";
 import "@uploadthing/react/styles.css";
 
