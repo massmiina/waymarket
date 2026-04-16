@@ -33,6 +33,8 @@ export interface ListingBase {
   location: string;
   images: string[];
   createdAt: string;
+  status: string;
+  details?: any;
   seller?: {
     id: string;
     name: string;

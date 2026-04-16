@@ -96,7 +96,16 @@ export async function GET() {
         proUsers
       },
       activity: activity.slice(0, 10),
-      chartData
+      chartData,
+      pendingListings: await db.listing.findMany({
+        where: { status: 'PENDING_REVIEW' },
+        orderBy: { createdAt: 'desc' },
+        include: { seller: { select: { name: true, avatarUrl: true } } }
+      }).then(list => list.map(l => ({
+        ...l,
+        images: JSON.parse(l.images),
+        details: JSON.parse(l.details || '{}')
+      })))
     });
 
   } catch (error) {

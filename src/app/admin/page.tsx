@@ -264,46 +264,103 @@ export default function AdminPage() {
              </div>
           </div>
 
-          {/* SIMPLIFIED MODERATION LIST */}
+          {/* PRIORITY MODERATION LIST */}
           <div className="lg:col-span-2 space-y-6">
-            <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
-               <AlertTriangle className="w-4 h-4 text-orange-400" /> Modération Prioritaire
+            <h2 className="text-sm font-black text-red-500 uppercase tracking-widest ml-2 flex items-center gap-2">
+               <ShieldAlert className="w-4 h-4" /> Alertes Fraude (À traiter)
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {listings.slice(0, 6).map(listing => (
-                <div key={listing.id} className="bg-white p-4 rounded-[1.5rem] border border-gray-50 shadow-sm flex flex-col gap-4 group hover:border-glacier/20 transition-all">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-slate-50">
-                      <img src={listing.images[0]} alt="" className="w-full h-full object-cover" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-bold text-gray-900 truncate text-sm">{listing.title}</h3>
-                      <p className="text-[10px] font-black text-glacier uppercase tracking-widest">{listing.price}€</p>
-                    </div>
+            <div className="grid grid-cols-1 gap-4">
+              {adminStats?.pendingListings?.map((listing: any) => (
+                <div key={listing.id} className="bg-white p-5 rounded-[2rem] border-2 border-red-50 shadow-md flex flex-col sm:flex-row gap-5 group hover:border-red-100 transition-all border-l-4 border-l-red-500 animate-in slide-in-from-top-4">
+                  <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0 border border-slate-50">
+                    <img src={listing.images[0]} alt="" className="w-full h-full object-cover" />
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <Link 
-                      href={`/listings/${listing.id}`}
-                      className="flex-1 py-2 rounded-xl bg-slate-50 text-slate-400 hover:bg-glacier hover:text-white transition flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
-                    >
-                      <CheckCircle className="w-4 h-4" /> Voir
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(listing.id)}
-                      className="p-2.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-2">
+                       <h3 className="font-bold text-gray-900 truncate text-base">{listing.title}</h3>
+                       <span className="text-[10px] font-black text-red-500 bg-red-50 px-2 py-0.5 rounded-full uppercase tracking-widest">Suspect</span>
+                    </div>
+                    
+                    {listing.details?.moderationReasons && (
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                         {listing.details.moderationReasons.map((reason: string, idx: number) => (
+                           <span key={idx} className="text-[9px] font-bold text-slate-500 bg-slate-100 px-2. py-1 rounded-lg border border-slate-200 shadow-sm">
+                              ⚠️ {reason}
+                           </span>
+                         ))}
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={async () => {
+                          const res = await fetch(`/api/listings/${listing.id}`, { 
+                            method: 'PATCH', 
+                            body: JSON.stringify({ status: 'ACTIVE' }),
+                            headers: { 'Content-Type': 'application/json' }
+                          });
+                          if (res.ok) window.location.reload();
+                        }}
+                        className="flex-1 py-3 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest shadow-sm shadow-emerald-50"
+                      >
+                        <CheckCircle className="w-4 h-4" /> Valider l'annonce
+                      </button>
+                      <button
+                        onClick={() => handleDelete(listing.id)}
+                        className="p-3 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
+
+              {(!adminStats?.pendingListings || adminStats.pendingListings.length === 0) && (
+                <div className="bg-white/50 border-2 border-dashed border-slate-100 rounded-[2rem] p-16 text-center">
+                   <CheckCircle className="w-12 h-12 text-emerald-200 mx-auto mb-4" />
+                   <p className="text-sm font-black text-slate-400 italic">Tout est calme sur Way Market ! Aucune alerte de fraude détectée.</p>
+                </div>
+              )}
             </div>
-            
-            <button className="w-full py-4 bg-white border border-dashed border-gray-200 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-indigo-600 hover:border-indigo-200 transition-all flex items-center justify-center gap-2">
-               Voir toutes les annonces à modérer <ArrowRight className="w-3 h-3" />
-            </button>
+
+            <div className="pt-8">
+              <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2 mb-6">
+                 <Package className="w-4 h-4" /> Flux Normal des Annonces
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {listings.filter(l => l.status === 'ACTIVE').slice(0, 6).map(listing => (
+                  <div key={listing.id} className="bg-white p-4 rounded-[1.5rem] border border-gray-50 shadow-sm flex flex-col gap-4 group hover:border-glacier/20 transition-all">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-slate-50">
+                        <img src={listing.images[0]} alt="" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-bold text-gray-900 truncate text-sm">{listing.title}</h3>
+                        <p className="text-[10px] font-black text-glacier uppercase tracking-widest">{listing.price}€</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <Link 
+                        href={`/listings/${listing.id}`}
+                        className="flex-1 py-2 rounded-xl bg-slate-50 text-slate-400 hover:bg-glacier hover:text-white transition flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
+                      >
+                        <CheckCircle className="w-4 h-4" /> Voir
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(listing.id)}
+                        className="p-2.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
         </div>

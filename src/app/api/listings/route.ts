@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
+import { checkListingModeration } from '@/lib/moderation';
 
 export const dynamic = 'force-dynamic';
 
@@ -141,9 +142,19 @@ export async function POST(request: Request) {
         error: `Limite de photos dépassée. Les membres ${(user as any).isPro ? 'Pro' : 'Classiques'} sont limités à ${photoLimit} photos.` 
       }, { status: 403 });
     }
-    // -------------------------------------------------------
 
-    console.log('Creating listing in database...');
+    // --- AUTOMATED MODERATION SCAN ---
+    const moderation = checkListingModeration(data.title, data.description, data.price);
+    const initialStatus = moderation.isSuspicious ? 'PENDING_REVIEW' : 'ACTIVE';
+    
+    // Enriching details with moderation metadata if flagged
+    const finalDetails = {
+      ...(data.details || {}),
+      ...(moderation.isSuspicious ? { moderationReasons: moderation.reasons } : {})
+    };
+    // ---------------------------------
+
+    console.log('Creating listing in database... Status:', initialStatus);
     const created = await db.listing.create({
       data: {
         title: data.title,
@@ -152,18 +163,18 @@ export async function POST(request: Request) {
         category: data.category,
         location: data.location,
         images: JSON.stringify(data.images),
-        details: data.details ? JSON.stringify(data.details) : null,
+        details: JSON.stringify(finalDetails),
         sellerId: data.sellerId,
-        status: 'ACTIVE'
+        status: initialStatus
       } as any
     });
 
-    console.log('Listing created successfully with ID:', created.id);
+    console.log('Listing created successfully with ID:', created.id, 'Status:', created.status);
 
     return NextResponse.json({
       ...created,
       images: JSON.parse(created.images),
-      details: created.details ? JSON.parse(created.details) : undefined,
+      details: JSON.parse(created.details || '{}'),
       createdAt: created.createdAt.toISOString()
     }, { status: 201 });
   } catch (error: any) {
