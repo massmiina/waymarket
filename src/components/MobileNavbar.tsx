@@ -12,21 +12,10 @@ import {
   Plus
 } from 'lucide-react';
 import { useMarket, Message } from '@/contexts/MarketContext';
-import { isMobile } from 'react-device-detect';
 
 export default function MobileNavbar() {
   const pathname = usePathname();
   const { currentUser, messages } = useMarket();
-  
-  // Hide on desktop
-  const [show, setShow] = React.useState(false);
-  
-  React.useEffect(() => {
-    // We use a state to avoid hydration mismatch while still using react-device-detect
-    setShow(isMobile);
-  }, []);
-
-  if (!show) return null;
 
   const unreadMessagesCount = messages.filter(
     (m: Message) => m.receiverId === currentUser?.id && !m.read
@@ -55,12 +44,12 @@ export default function MobileNavbar() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[60] sm:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] flex sm:hidden">
       {/* Background with Blur - Glassmorphism */}
-      <div className="absolute inset-0 bg-white/90 backdrop-blur-2xl border-t border-slate-100/50"></div>
+      <div className="absolute inset-0 bg-white/95 backdrop-blur-2xl border-t border-slate-100/50"></div>
       
       {/* Safe Area Container */}
-      <div className="relative flex items-center justify-around h-16 pb-safe px-1">
+      <div className="relative flex items-center justify-around h-16 w-full pb-safe px-1">
         
         <NavItem href="/" icon={Home} label="Accueil" />
         
