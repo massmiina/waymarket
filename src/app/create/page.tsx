@@ -419,6 +419,97 @@ export default function CreateListing() {
                 </div>
               </div>
             </div>
+
+            {/* SECTION 4: SPECIFIC DETAILS */}
+            {category && (
+              <div className="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-indigo-100/50 rounded-[32px] p-8 md:p-10">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 bg-violet-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-violet-200">
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Spécifications</h2>
+                    <p className="text-gray-500 font-medium">Détails spécifiques pour votre {category}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {category === 'Véhicules' && (
+                    <>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Marque</label>
+                        <input type="text" value={String(details.brand || '')} onChange={e => handleDetailChange('brand', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: BMW" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Modèle</label>
+                        <input type="text" value={String(details.model || '')} onChange={e => handleDetailChange('model', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: Série 3" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Kilométrage</label>
+                        <input type="number" value={details.mileage as number || ''} onChange={e => handleDetailChange('mileage', Number(e.target.value))} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 85000" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Année</label>
+                        <input type="number" value={details.year as number || ''} onChange={e => handleDetailChange('year', Number(e.target.value))} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 2018" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Carburant</label>
+                        <select value={String(details.fuelType || '')} onChange={e => handleDetailChange('fuelType', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none">
+                          <option value="">Sélectionner</option>
+                          <option value="Essence">Essence</option>
+                          <option value="Diesel">Diesel</option>
+                          <option value="Hybride">Hybride</option>
+                          <option value="Électrique">Électrique</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Boîte</label>
+                        <select value={String(details.gearbox || '')} onChange={e => handleDetailChange('gearbox', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none">
+                          <option value="">Sélectionner</option>
+                          <option value="Manuelle">Manuelle</option>
+                          <option value="Automatique">Automatique</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {category === 'Immobilier' && (
+                    <>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Type de bien</label>
+                        <input type="text" value={String(details.type || '')} onChange={e => handleDetailChange('type', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Maison, Appartement..." />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Surface (m²)</label>
+                        <input type="number" value={details.surfaceArea as number || ''} onChange={e => handleDetailChange('surfaceArea', Number(e.target.value))} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 75" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Pièces</label>
+                        <input type="number" value={details.rooms as number || ''} onChange={e => handleDetailChange('rooms', Number(e.target.value))} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 3" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">DPE</label>
+                        <input type="text" value={String(details.energyClass || '')} onChange={e => handleDetailChange('energyClass', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="A, B, C, D..." />
+                      </div>
+                    </>
+                  )}
+
+                  {(category === 'Mobilier' || category === 'Électronique') && (
+                    <>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">{category === 'Mobilier' ? 'Matière' : 'Marque'}</label>
+                        <input type="text" value={String(details[category === 'Mobilier' ? 'material' : 'brand'] || '')} onChange={e => handleDetailChange(category === 'Mobilier' ? 'material' : 'brand', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Détail important..." />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">{category === 'Mobilier' ? 'Dimensions' : 'Modèle'}</label>
+                        <input type="text" value={String(details[category === 'Mobilier' ? 'dimensions' : 'model'] || '')} onChange={e => handleDetailChange(category === 'Mobilier' ? 'dimensions' : 'model', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Plus d'infos..." />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
           </div>
 
           {/* Side Preview (Desktop Only) */}
