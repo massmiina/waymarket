@@ -65,14 +65,8 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
     );
   }
 
-  // Parse details
-  let details: any = {};
-  try {
-    details = listing.details ? JSON.parse(listing.details) : {};
-  } catch (e) {
-    // If it's already an object (though prisma says string)
-    details = listing.details || {};
-  }
+  // Details are already parsed as an object by the MarketContext
+  const details = (listing.details as any) || {};
 
   const handleSendMessage = async () => {
     if (!currentUser) {
