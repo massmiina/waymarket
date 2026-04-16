@@ -205,6 +205,25 @@ export default function AccountPage() {
 
         </div>
 
+        {/* Administration Section (Admin only) */}
+        {currentUser?.role === 'ADMIN' && (
+          <div className="mt-8 sm:mt-12 space-y-4 sm:space-y-6 animate-in slide-in-from-bottom-4 duration-700">
+            <div className="flex items-center gap-2 ml-2">
+              <Shield className="w-4 h-4 text-indigo-500" />
+              <h2 className="text-[10px] sm:text-sm font-black text-indigo-500 uppercase tracking-widest">Mon Hub Admin</h2>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
+              <DashboardCard 
+                icon={Shield} 
+                title="Tableau de bord Administration" 
+                description="Gérez les utilisateurs, annonces et statistiques" 
+                href="/admin"
+                badge={0}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Logout Section */}
         <div className="mt-12 pt-8 border-t border-gray-200 flex justify-center sm:justify-end">
           <button 

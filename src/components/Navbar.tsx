@@ -13,7 +13,7 @@ import {
   Menu,
   X,
   Home,
-  ShieldAlert
+  Shield
 } from 'lucide-react';
 import { useMarket, Message } from '@/contexts/MarketContext';
 import Image from 'next/image';
@@ -121,10 +121,11 @@ export default function Navbar() {
                 {currentUser?.role === 'ADMIN' && (
                   <Link
                     href="/admin"
-                    className="p-2 rounded-full text-red-500 hover:bg-red-50 transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full hover:bg-indigo-100 transition shadow-sm border border-indigo-100"
                     title="Console Admin"
                   >
-                    <ShieldAlert className="h-5 w-5" />
+                    <Shield className="h-3.5 w-3.5" />
+                    <span className="text-[9px] font-black uppercase tracking-wider">Admin</span>
                   </Link>
                 )}
                 <Link
@@ -159,9 +160,9 @@ export default function Navbar() {
              {currentUser?.role === 'ADMIN' && (
                <Link
                 href="/admin"
-                className="p-2 rounded-full bg-red-50 text-red-500"
+                className="p-2 rounded-full bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100"
               >
-                <ShieldAlert className="h-5 w-5" />
+                <Shield className="h-5 w-5" />
               </Link>
              )}
             <Link

@@ -138,6 +138,18 @@ export default function MenuPage() {
                   color="bg-yellow-500 text-yellow-600"
                 />
               </div>
+
+              {currentUser?.role === 'ADMIN' && (
+                <div className="col-span-2 sm:col-span-1">
+                  <MenuCard 
+                    href="/admin" 
+                    icon={Shield} 
+                    label="Console Admin" 
+                    description="Gérer la plateforme"
+                    color="bg-indigo-500 text-indigo-600"
+                  />
+                </div>
+              )}
             </div>
           </div>
 

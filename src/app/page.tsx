@@ -7,13 +7,31 @@ import ListingCard from '@/components/ListingCard';
 import ListingCardSkeleton from '@/components/ListingCardSkeleton';
 import CategoryFilter from '@/components/CategoryFilter';
 import { useMarket, Category } from '@/contexts/MarketContext';
-import { Search, SlidersHorizontal, MapPin, Euro, Calendar, Gauge } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Euro, Calendar, Gauge, Crown } from 'lucide-react';
 import { CAR_DATA, FUEL_TYPES, GEARBOX_TYPES, COLORS, CLOTHING_SIZES } from '@/lib/constants';
 
 export default function Home() {
-  const { listings, isLoading, metadata, fetchMoreListings } = useMarket();
+  const { listings, isLoading, metadata, fetchMoreListings, currentUser } = useMarket();
+  const [userCount, setUserCount] = useState<number>(0);
+  const [showOffer, setShowOffer] = useState(false);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<Category | 'Toutes'>('Toutes');
+  
+  useEffect(() => {
+    fetch('/api/stats/user-count')
+      .then(res => res.json())
+      .then(data => {
+        setUserCount(data.count || 0);
+        setShowOffer(data.count < 1000);
+      })
+      .catch(() => setShowOffer(false));
+  }, []);
+
+  const handleLoadMore = async () => {
+    setIsMoreLoading(true);
+    await fetchMoreListings();
+    setIsMoreLoading(false);
+  };
   const [searchQuery, setSearchQuery] = useState('');
   const [maxPrice, setMaxPrice] = useState<string>('');
   const [locationQuery, setLocationQuery] = useState('');
@@ -28,12 +46,6 @@ export default function Home() {
   const [gearboxQuery, setGearboxQuery] = useState('');
   const [colorQuery, setColorQuery] = useState('');
   const [sizeQuery, setSizeQuery] = useState('');
-
-  const handleLoadMore = async () => {
-    setIsMoreLoading(true);
-    await fetchMoreListings();
-    setIsMoreLoading(false);
-  };
 
   const filteredListings = listings.filter((listing) => {
     const matchesCategory = activeCategory === 'Toutes' || listing.category === activeCategory;
@@ -83,8 +95,25 @@ export default function Home() {
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-glacier/5 blur-[80px] sm:blur-[120px] rounded-full"></div>
         </div>
 
-        <div className="relative z-10 w-full max-w-2xl px-4 sm:px-6">
-          <div className="glass-card p-1.5 sm:p-2 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-slate-200/50">
+        <div className="relative z-10 w-full max-w-2xl px-4 sm:px-6 flex flex-col items-center">
+          
+          {/* LIMITED PRO OFFER CTA */}
+          {showOffer && !currentUser?.isPro && (
+            <Link 
+              href="/pro"
+              className="mb-8 flex items-center gap-3 px-6 py-2.5 bg-white/80 backdrop-blur-xl border border-glacier/30 rounded-full shadow-xl shadow-glacier/10 hover:shadow-glacier/20 hover:scale-105 transition-all duration-300 group animate-in slide-in-from-top-4 duration-1000"
+            >
+              <div className="w-8 h-8 bg-glacier rounded-full flex items-center justify-center shadow-lg shadow-glacier/30 group-hover:rotate-12 transition-transform">
+                <Crown className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex flex-col items-start leading-tight">
+                <span className="text-[10px] font-black text-glacier uppercase tracking-[0.15em]">Offre Limitée</span>
+                <span className="text-xs font-bold text-slate-900 leading-none">Commencer votre offre gratuite</span>
+              </div>
+            </Link>
+          )}
+
+          <div className="glass-card w-full p-1.5 sm:p-2 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-slate-200/50">
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-slate-300 group-focus-within:text-glacier transition-colors" />
