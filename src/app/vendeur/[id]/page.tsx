@@ -7,7 +7,7 @@ import { useMarket } from '@/contexts/MarketContext';
 import { useRouter } from 'next/navigation';
 import { 
   User as UserIcon, 
-  ShieldCheck, 
+  Shield, 
   Clock, 
   ChevronLeft,
   MapPin,
@@ -76,7 +76,7 @@ export default function SellerProfile({ params }: { params: Promise<{ id: string
             <div className="relative">
               <div className="w-40 h-40 rounded-full bg-slate-100 overflow-hidden ring-8 ring-white shadow-2xl shadow-indigo-200 border border-slate-100">
                 {seller?.avatarUrl ? (
-                  <Image src={seller.avatarUrl} alt="" fill className="object-cover" />
+                  <Image src={seller.avatarUrl || '/default-avatar.png'} alt="" fill className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-200 bg-slate-50">
                     <UserIcon className="h-20 w-20" />
@@ -85,7 +85,7 @@ export default function SellerProfile({ params }: { params: Promise<{ id: string
               </div>
               {seller?.isPro && (
                 <div className="absolute -bottom-2 -right-2 p-3 bg-amber-400 rounded-2xl shadow-xl border-4 border-white rotate-12 transition-transform hover:rotate-0">
-                  <ShieldCheck className="h-6 w-6 text-white" />
+                  <Shield className="h-6 w-6 text-white" />
                 </div>
               )}
             </div>

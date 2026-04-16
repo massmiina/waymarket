@@ -16,11 +16,11 @@ import {
   Fuel, 
   Sparkles,
   User as UserIcon,
-  ShieldCheck,
+  Shield,
   MessageCircle,
   Clock,
   ChevronRight,
-  CheckCircle2
+  CheckCircle
 } from 'lucide-react';
 import { useMarket } from '@/contexts/MarketContext';
 
@@ -223,7 +223,7 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
               <div className="flex items-center gap-6 mb-8">
                 <div className="relative w-20 h-20 rounded-full bg-slate-100 overflow-hidden ring-4 ring-slate-50 border-4 border-white shadow-xl shadow-slate-200">
                   {listing.seller?.avatarUrl ? (
-                    <Image src={listing.seller.avatarUrl} alt="" fill className="object-cover" />
+                    <Image src={listing.seller.avatarUrl || '/default-avatar.png'} alt="" fill className="object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-300">
                       <UserIcon className="h-10 w-10" />
@@ -231,7 +231,7 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
                   )}
                   {listing.seller?.isPro && (
                     <div className="absolute -bottom-1 -right-1 p-1.5 bg-amber-400 rounded-full shadow-lg border-2 border-white">
-                      <ShieldCheck className="h-4 w-4 text-white" />
+                      <Shield className="h-4 w-4 text-white" />
                     </div>
                   )}
                 </div>
@@ -249,7 +249,7 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
               {listing.seller?.isPro && (
                 <div className="p-4 bg-amber-50/50 rounded-2xl border border-amber-100 mb-8">
                   <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest flex items-center gap-2">
-                    <ShieldCheck className="h-3.5 w-3.5" />
+                    <Shield className="h-3.5 w-3.5" />
                     Vendeur Professionnel
                   </p>
                   <p className="text-[10px] text-amber-500 font-medium mt-1 leading-relaxed">

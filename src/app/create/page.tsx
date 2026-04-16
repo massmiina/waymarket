@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useMarket, Category } from '@/contexts/MarketContext';
 import { 
   UploadCloud, 
-  CheckCircle2, 
+  CheckCircle, 
   X, 
   Car, 
   Sofa, 
@@ -84,8 +84,6 @@ export default function CreateListing() {
 
   // Auto-scroll to next section
   const detailsRef = useRef<HTMLDivElement>(null);
-  const photosRef = useRef<HTMLDivElement>(null);
-  const validationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!currentUser) router.push('/auth');
@@ -177,7 +175,7 @@ export default function CreateListing() {
         <Navbar />
         <div className="flex flex-col items-center justify-center pt-32 px-4 text-center">
           <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
-            <CheckCircle2 className="h-12 w-12 text-green-600" />
+            <CheckCircle className="h-12 w-12 text-green-600" />
           </div>
           <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">C&apos;est en ligne !</h2>
           <p className="text-xl text-gray-500 max-w-md">Votre annonce est maintenant visible par des milliers d&apos;acheteurs.</p>
@@ -261,7 +259,7 @@ export default function CreateListing() {
             </div>
 
             {/* SECTION 2: PHOTOS */}
-            <div className={`transition-all duration-500 ${category ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`} ref={photosRef}>
+            <div className={`transition-all duration-500 ${category ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`}>
               <div className="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-indigo-100/50 rounded-[32px] p-8 md:p-10">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="w-12 h-12 bg-pink-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-pink-200">
