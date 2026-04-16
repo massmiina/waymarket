@@ -49,3 +49,15 @@ export const CONDITIONS = [
   "Bon état",
   "Satisfaisant"
 ];
+
+export const FUEL_TYPES = [
+  "Essence",
+  "Diesel",
+  "Hybride",
+  "Électrique"
+];
+
+export const GEARBOX_TYPES = [
+  "Manuelle",
+  "Automatique"
+];

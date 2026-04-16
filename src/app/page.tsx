@@ -7,7 +7,7 @@ import ListingCardSkeleton from '@/components/ListingCardSkeleton';
 import CategoryFilter from '@/components/CategoryFilter';
 import { useMarket, Category } from '@/contexts/MarketContext';
 import { Search, SlidersHorizontal, MapPin, Euro, Calendar, Gauge } from 'lucide-react';
-import { CAR_DATA } from '@/lib/constants';
+import { CAR_DATA, FUEL_TYPES, GEARBOX_TYPES } from '@/lib/constants';
 
 export default function Home() {
   const { listings, isLoading, metadata, fetchMoreListings } = useMarket();
@@ -23,6 +23,8 @@ export default function Home() {
   const [modelQuery, setModelQuery] = useState('');
   const [maxMileage, setMaxMileage] = useState('');
   const [minYear, setMinYear] = useState('');
+  const [fuelQuery, setFuelQuery] = useState('');
+  const [gearboxQuery, setGearboxQuery] = useState('');
 
   const handleLoadMore = async () => {
     setIsMoreLoading(true);
@@ -44,8 +46,10 @@ export default function Home() {
       const matchesModel = modelQuery === '' || details.model === modelQuery;
       const matchesMileage = maxMileage === '' || (details.mileage as number) <= Number(maxMileage);
       const matchesYear = minYear === '' || (details.year as number) >= Number(minYear);
+      const matchesFuel = fuelQuery === '' || details.fuelType === fuelQuery;
+      const matchesGearbox = gearboxQuery === '' || details.gearbox === gearboxQuery;
       
-      return matchesCategory && matchesSearch && matchesPrice && matchesLocation && matchesBrand && matchesModel && matchesMileage && matchesYear;
+      return matchesCategory && matchesSearch && matchesPrice && matchesLocation && matchesBrand && matchesModel && matchesMileage && matchesYear && matchesFuel && matchesGearbox;
     }
                           
     return matchesCategory && matchesSearch && matchesPrice && matchesLocation;
@@ -161,7 +165,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Kilométrage Max</label>
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 group-focus-within:text-glacier">
@@ -175,6 +179,30 @@ export default function Home() {
                         className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none placeholder:text-slate-200"
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Carburant</label>
+                    <select
+                      value={fuelQuery}
+                      onChange={(e) => setFuelQuery(e.target.value)}
+                      className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none appearance-none cursor-pointer"
+                    >
+                      <option value="">Tous</option>
+                      {FUEL_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Boîte de vitesse</label>
+                    <select
+                      value={gearboxQuery}
+                      onChange={(e) => setGearboxQuery(e.target.value)}
+                      className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none appearance-none cursor-pointer"
+                    >
+                      <option value="">Toutes</option>
+                      {GEARBOX_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+                    </select>
                   </div>
                 </>
               )}
@@ -221,6 +249,8 @@ export default function Home() {
                 setModelQuery('');
                 setMaxMileage('');
                 setMinYear('');
+                setFuelQuery('');
+                setGearboxQuery('');
               }} />
             </div>
           </div>

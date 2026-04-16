@@ -26,7 +26,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useUploadThing } from "@/lib/uploadthing";
-import { CATEGORIES, CAR_DATA, CONDITIONS } from "@/lib/constants";
+import { CATEGORIES, CAR_DATA, CONDITIONS, FUEL_TYPES, GEARBOX_TYPES } from "@/lib/constants";
 import "@uploadthing/react/styles.css";
 
 export default function CreateListing() {
@@ -112,6 +112,8 @@ export default function CreateListing() {
       if (!details.model) missing.push("Modèle");
       if (!details.mileage) missing.push("Kilométrage");
       if (!details.year) missing.push("Année");
+      if (!details.fuelType) missing.push("Carburant");
+      if (!details.gearbox) missing.push("Boîte à vitesse");
     }
     return missing;
   };
@@ -385,6 +387,28 @@ export default function CreateListing() {
                       <div>
                         <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Année</label>
                         <input type="number" value={details.year as number || ''} onChange={e => handleDetailChange('year', Number(e.target.value))} className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 2018" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Carburant</label>
+                        <select 
+                          value={String(details.fuelType || '')} 
+                          onChange={e => handleDetailChange('fuelType', e.target.value)} 
+                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Sélectionner</option>
+                          {FUEL_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Boîte de vitesse</label>
+                        <select 
+                          value={String(details.gearbox || '')} 
+                          onChange={e => handleDetailChange('gearbox', e.target.value)} 
+                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Sélectionner</option>
+                          {GEARBOX_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
                       </div>
                     </div>
                   )}
