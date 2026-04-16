@@ -44,7 +44,11 @@ export default function ProPage() {
         const res = await fetch('/api/user/subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: currentUser.id })
+          body: JSON.stringify({ 
+            userId: currentUser.id,
+            email: currentUser.email,
+            name: currentUser.name
+          })
         });
         
         const data = await res.json();
@@ -58,7 +62,11 @@ export default function ProPage() {
         const res = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: currentUser.id })
+          body: JSON.stringify({ 
+            userId: currentUser.id,
+            email: currentUser.email,
+            name: currentUser.name
+          })
         });
         
         const data = await res.json();

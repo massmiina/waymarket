@@ -3,29 +3,34 @@ import { db } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
-    const { userId } = await request.json();
+    const { userId, email, name } = await request.json();
     
-    if (!userId) {
-      return NextResponse.json({ error: 'Missing User ID' }, { status: 400 });
+    if (!userId || !email) {
+      return NextResponse.json({ error: 'Missing User ID or Email' }, { status: 400 });
     }
 
-    // Toggle Pro status for this mock implementation
-    const user = await db.user.findUnique({ where: { id: userId } });
-    
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const updatedUser = await db.user.update({
+    // Upsert Pro status: Create user if missing, then toggle Pro
+    const user = await db.user.upsert({
       where: { id: userId },
-      data: { isPro: true } as any
+      update: {
+        isPro: true,
+        email: email.toLowerCase().trim(),
+        name: name || email.split('@')[0]
+      },
+      create: {
+        id: userId,
+        email: email.toLowerCase().trim(),
+        name: name || email.split('@')[0],
+        isPro: true,
+        role: 'USER'
+      }
     });
 
-    return NextResponse.json(updatedUser);
+    return NextResponse.json(user);
   } catch (error: any) {
-    console.error('Error toggling Pro status:', error);
+    console.error('Error in subscription upsert:', error);
     return NextResponse.json({ 
-      error: 'Subscription failed', 
+      error: 'Activation failed', 
       details: error.message || error.toString() 
     }, { status: 500 });
   }
