@@ -118,8 +118,15 @@ export default function CreateListing() {
           router.push('/mes-ventes');
         }, 2000);
       } else {
-        alert(`Erreur: ${data.error || "Impossible de publier l'annonce"}`);
-        console.error(data.details);
+        // Handle specific errors like 'User not found' which might mean sync is still in progress
+        if (res.status === 404 && data.syncNeeded) {
+          alert("Votre compte est en cours de synchronisation. Veuillez patienter quelques secondes et réessayer.");
+          // Attempt to trigger a sync in the background
+          window.location.reload(); 
+        } else {
+          alert(`Erreur: ${data.error || "Impossible de publier l'annonce"}`);
+        }
+        console.error('Submission Error:', data);
       }
     } catch (err) {
       console.error(err);
@@ -492,27 +499,34 @@ export default function CreateListing() {
             </button>
           ) : <div></div>}
 
-          {currentStep < 4 ? (
-            <button
-              type="button"
-              onClick={nextStep}
-              disabled={
-                (currentStep === 1 && !validateStep1()) ||
-                (currentStep === 2 && !validateStep2()) ||
-                (currentStep === 3 && !validateStep3())
-              }
-              className="flex items-center gap-2 px-8 py-3 font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0"
-            >
-              Continuer <ChevronRight className="w-5 h-5" />
-            </button>
+            <div className="flex flex-col items-end gap-2">
+              {!validateStep1() && <span className="text-xs text-red-500 font-medium italic">Sélectionnez une catégorie</span>}
+              {currentStep === 2 && !validateStep2() && <span className="text-xs text-red-500 font-medium italic">Remplissez tous les champs obligatoires (*)</span>}
+              {currentStep === 3 && !validateStep3() && <span className="text-xs text-red-500 font-medium italic">Ajoutez au moins une photo pour continuer</span>}
+              <button
+                type="button"
+                onClick={nextStep}
+                disabled={
+                  (currentStep === 1 && !validateStep1()) ||
+                  (currentStep === 2 && !validateStep2()) ||
+                  (currentStep === 3 && !validateStep3())
+                }
+                className="flex items-center gap-2 px-8 py-3 font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0"
+              >
+                Continuer <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
           ) : (
-            <button
-              onClick={handleSubmit}
-              disabled={!validateStep4() || !validateStep3() || !validateStep2() || !validateStep1()}
-              className="flex items-center gap-2 px-8 py-3 font-bold text-white bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0 text-lg"
-            >
-              Publier mon annonce <CheckCircle2 className="w-6 h-6" />
-            </button>
+            <div className="flex flex-col items-end gap-2 text-right">
+              {!validateStep4() && <span className="text-xs text-red-500 font-medium italic">Prix et localisation obligatoires</span>}
+              <button
+                onClick={handleSubmit}
+                disabled={!validateStep4() || !validateStep3() || !validateStep2() || !validateStep1() || isUploading}
+                className="flex items-center gap-2 px-8 py-3 font-bold text-white bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0 text-lg"
+              >
+                {isUploading ? 'Publication...' : 'Publier mon annonce'} <CheckCircle2 className="w-6 h-6" />
+              </button>
+            </div>
           )}
         </div>
 

@@ -104,13 +104,16 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
   try {
     const rawData = await request.json();
+    console.log('--- POST LISTING ATTEMPT ---');
+    console.log('Received Data:', JSON.stringify(rawData, null, 2));
     
     // Validation avec Zod
     const validated = listingSchema.safeParse(rawData);
     
     if (!validated.success) {
+      console.warn('Validation failed:', validated.error.format());
       return NextResponse.json({ 
-        error: 'Validation failed', 
+        error: 'Données invalides. Veuillez vérifier tous les champs.', 
         details: validated.error.flatten().fieldErrors 
       }, { status: 400 });
     }
@@ -118,19 +121,29 @@ export async function POST(request: Request) {
     const { data } = validated;
 
     // --- SECURITY CHECK: Photo limits based on Pro status ---
+    console.log('Checking user existence for ID:', data.sellerId);
     const user = await db.user.findUnique({ where: { id: data.sellerId } });
+    
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      console.error('CRITICAL: User not found in DB even though they are logged in via Clerk.');
+      return NextResponse.json({ 
+        error: 'Utilisateur non reconnu dans la base de données. Essayez de vous reconnecter.',
+        syncNeeded: true 
+      }, { status: 404 });
     }
+
+    console.log('User found. Pro Status:', (user as any).isPro);
 
     const photoLimit = (user as any).isPro ? 10 : 3;
     if (data.images.length > photoLimit) {
+      console.warn(`Photo limit exceeded: ${data.images.length} > ${photoLimit}`);
       return NextResponse.json({ 
-        error: `Photo limit exceeded. ${(user as any).isPro ? 'Pro' : 'Regular'} users are limited to ${photoLimit} photos.` 
+        error: `Limite de photos dépassée. Les membres ${(user as any).isPro ? 'Pro' : 'Classiques'} sont limités à ${photoLimit} photos.` 
       }, { status: 403 });
     }
     // -------------------------------------------------------
 
+    console.log('Creating listing in database...');
     const created = await db.listing.create({
       data: {
         title: data.title,
@@ -145,6 +158,8 @@ export async function POST(request: Request) {
       } as any
     });
 
+    console.log('Listing created successfully with ID:', created.id);
+
     return NextResponse.json({
       ...created,
       images: JSON.parse(created.images),
@@ -153,6 +168,9 @@ export async function POST(request: Request) {
     }, { status: 201 });
   } catch (error: any) {
     console.error('Listings POST Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Erreur interne du serveur lors de la publication.',
+      details: error.message 
+    }, { status: 500 });
   }
 }

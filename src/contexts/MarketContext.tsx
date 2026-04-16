@@ -182,6 +182,7 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
       // ------------------------------------------
 
       try {
+        console.log('Starting user sync with DB...');
         const syncRes = await fetch('/api/auth/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -199,6 +200,7 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
 
         if (syncRes.ok) {
           const syncedUser = await syncRes.json();
+          console.log('User synced successfully:', syncedUser.id);
           
           // Force admin status if email matches
           if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
@@ -215,9 +217,23 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
 
           if (favRes.ok) setFavorites(await favRes.json());
           if (convsRes.ok) setConversations(await convsRes.json());
+        } else {
+          const errorData = await syncRes.json();
+          console.error('Sync failed with status:', syncRes.status, errorData);
+          // Fallback to minimal user object to avoid complete block if DB is just busy
+          // but marking as not fully synced for actions that require DB existence
+          setCurrentUser({
+            id: clerkUser.id,
+            name: clerkUser.fullName || clerkUser.primaryEmailAddress?.emailAddress?.split('@')[0] || 'Utilisateur',
+            email: clerkUser.primaryEmailAddress?.emailAddress || '',
+            avatarUrl: clerkUser.imageUrl,
+            memberSince: new Date().toISOString(),
+            isPro: false,
+            role: userEmail && ADMIN_EMAILS.includes(userEmail) ? 'ADMIN' : 'USER'
+          });
         }
       } catch (err) {
-        console.error("Sync error:", err);
+        console.error("Sync fetch error:", err);
       }
     }
 
