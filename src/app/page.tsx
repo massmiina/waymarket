@@ -298,8 +298,8 @@ export default function Home() {
 
         {/* Categories Bar (Visible when main filters are hidden) */}
         {!isFiltersOpen && (
-          <div className="mb-12 flex justify-center">
-            <div className="bg-white/50 backdrop-blur-sm p-1.5 rounded-full border border-slate-100">
+          <div className="mb-8 sm:mb-12 flex justify-center">
+            <div className="w-full max-w-xl bg-white/50 backdrop-blur-sm p-2 sm:p-1.5 rounded-[2rem] sm:rounded-full border border-slate-100">
                <CategoryFilter activeCategory={activeCategory} onSelect={setActiveCategory} />
             </div>
           </div>

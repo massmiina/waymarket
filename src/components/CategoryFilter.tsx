@@ -23,19 +23,21 @@ interface CategoryFilterProps {
 
 export default function CategoryFilter({ activeCategory, onSelect }: CategoryFilterProps) {
   return (
-    <div className="flex overflow-x-auto py-4 hide-scrollbar gap-2 sm:gap-4 snap-x">
+    <div className="grid grid-cols-3 sm:flex sm:overflow-x-auto py-2 sm:py-4 hide-scrollbar gap-2 sm:gap-4">
       {categories.map((cat) => (
         <button
           key={cat.name}
           onClick={() => onSelect(cat.name)}
-          className={`flex flex-col items-center justify-center min-w-[72px] sm:min-w-[88px] p-3 rounded-2xl transition snap-start border ${
+          className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl sm:rounded-2xl transition border ${
             activeCategory === cat.name
               ? 'bg-glacier/5 border-glacier/20 text-glacier font-black uppercase tracking-widest'
               : 'bg-white/50 border-slate-100 text-slate-400 hover:bg-slate-50 hover:text-slate-900 font-bold uppercase tracking-widest'
           }`}
         >
-          {cat.icon}
-          <span className="text-[10px] sm:text-xs text-center">{cat.name}</span>
+          <div className="transform scale-90 sm:scale-100">
+            {cat.icon}
+          </div>
+          <span className="text-[8px] sm:text-xs text-center line-clamp-1">{cat.name}</span>
         </button>
       ))}
     </div>
