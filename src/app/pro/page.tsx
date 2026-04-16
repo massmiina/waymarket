@@ -26,8 +26,13 @@ export default function ProPage() {
     fetch('/api/stats/user-count')
       .then(res => res.json())
       .then(data => {
-        setUserCount(data.count || 0);
-        setIsLimitedOffer(data.count < 1000);
+        const count = typeof data.count === 'number' ? data.count : 0;
+        setUserCount(count);
+        setIsLimitedOffer(count < 1000);
+      })
+      .catch(() => {
+        // Fallback to local default (true) if count fetch fails
+        setIsLimitedOffer(true);
       });
   }, []);
 
@@ -39,8 +44,7 @@ export default function ProPage() {
 
     setIsLoading(true);
     try {
-      // Logic toggle based on user count
-      if (isLimitedOffer) {
+      const callSubscribe = async () => {
         const res = await fetch('/api/user/subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -50,14 +54,17 @@ export default function ProPage() {
             name: currentUser.name
           })
         });
-        
-        const data = await res.json();
-        
         if (res.ok) {
           window.location.href = '/compte?success=pro_activated';
         } else {
+          const data = await res.json();
           alert(`Erreur: ${data.error || "L'activation a échoué"}`);
         }
+      };
+
+      // Logic toggle based on user count
+      if (isLimitedOffer) {
+        await callSubscribe();
       } else {
         const res = await fetch('/api/checkout', {
           method: 'POST',
@@ -74,12 +81,18 @@ export default function ProPage() {
         if (res.ok) {
           window.location.href = data.url;
         } else {
-          alert(`Erreur Stripe: ${data.error || "Impossible d'ouvrir le paiement"}`);
+          // If the server says it's actually free, then do the free activation!
+          if (data.error && data.error.includes('gratuit')) {
+            console.log("Redirecting to free activation as per server instruction...");
+            await callSubscribe();
+          } else {
+            alert(`Erreur Stripe: ${data.error || "Impossible d'ouvrir le paiement"}`);
+          }
         }
       }
     } catch (err) {
       console.error(err);
-      alert("Une erreur de réseau est survenue. Veuillez réessayer.");
+      alert("Une erreur est survenue. Veuillez réessayer.");
     } finally {
       setIsLoading(false);
     }
