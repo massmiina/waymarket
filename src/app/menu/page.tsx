@@ -16,7 +16,7 @@ import {
   Home,
   Search,
   Zap,
-  ShieldCheck,
+  Shield,
   Bell
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -91,7 +91,7 @@ export default function MenuPage() {
               ) : (
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full uppercase tracking-wider">
-                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <Shield className="w-3.5 h-3.5" />
                     Vérifié
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-bold rounded-full uppercase tracking-wider">

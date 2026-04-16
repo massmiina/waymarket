@@ -324,7 +324,7 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
                     </button>
                     {messageSent && (
                       <div className="flex items-center justify-center gap-2 animate-pulse">
-                        <CheckCircle2 className="h-4 w-4 text-white" />
+                        <CheckCircle className="h-4 w-4 text-white" />
                         <p className="text-[10px] font-black uppercase tracking-widest">Message envoyé !</p>
                       </div>
                     )}

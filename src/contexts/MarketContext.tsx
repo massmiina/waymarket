@@ -38,6 +38,7 @@ export interface ListingBase {
     name: string;
     isPro: boolean;
     avatarUrl?: string | null;
+    memberSince: string;
   };
 }
 

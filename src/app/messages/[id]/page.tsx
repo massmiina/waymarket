@@ -9,12 +9,13 @@ import {
   ChevronLeft, 
   MapPin, 
   MoreVertical, 
-  ShieldCheck,
-  CheckCircle2,
+  Shield,
+  CheckCircle,
   Package,
   ExternalLink,
   Clock,
-  Info
+  Info,
+  MessageCircle
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -123,7 +124,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
 
           <div className="flex items-center gap-3">
              <div className="hidden md:flex items-center gap-2 bg-indigo-50/50 px-4 py-2 rounded-2xl border border-indigo-100">
-               <ShieldCheck className="w-4 h-4 text-indigo-600" />
+               <Shield className="w-4 h-4 text-indigo-600" />
                <span className="text-[10px] font-black text-indigo-700 uppercase tracking-widest">Transaction sécurisée</span>
              </div>
              <button className="p-3 hover:bg-slate-50 rounded-2xl text-slate-300 transition-all">
@@ -178,7 +179,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                   <div className={`flex items-center gap-2 px-2 text-[9px] font-black uppercase tracking-widest ${isMe ? 'justify-end text-slate-300' : 'text-slate-300'}`}>
                     <Clock className="h-2.5 w-2.5" />
                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    {isMe && <CheckCircle2 className="h-2.5 w-2.5 text-indigo-400" />}
+                    {isMe && <CheckCircle className="h-2.5 w-2.5 text-indigo-400" />}
                   </div>
                 </div>
               </div>

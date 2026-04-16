@@ -12,7 +12,7 @@ import {
   ShoppingBag, 
   ArchiveRestore,
   ChevronRight,
-  ShieldCheck,
+  Shield,
   LogOut,
   Calendar
 } from 'lucide-react';
@@ -84,11 +84,11 @@ export default function AccountPage() {
         {isSuccess && (
           <div className="mb-8 p-6 bg-gradient-to-r from-glacier to-indigo-600 rounded-[2rem] text-white shadow-xl shadow-glacier/20 animate-in zoom-in duration-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10">
-              <ShieldCheck className="w-32 h-32" />
+              <Shield className="w-32 h-32" />
             </div>
             <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
               <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-10 h-10 text-white" />
+                <Shield className="w-10 h-10 text-white" />
               </div>
               <div>
                 <h2 className="text-xl font-black uppercase tracking-widest mb-1">Félicitations !</h2>
@@ -125,7 +125,7 @@ export default function AccountPage() {
                   </h1>
                   {currentUser?.isPro ? (
                     <span className="px-3 py-1 bg-glacier text-white text-[10px] font-black rounded-full uppercase tracking-widest shadow-lg shadow-glacier/20 flex items-center gap-1.5 animate-in zoom-in-50 duration-500">
-                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <Shield className="w-3.5 h-3.5" />
                       Membre Pro
                     </span>
                   ) : (
@@ -136,7 +136,7 @@ export default function AccountPage() {
                 </div>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-4 mt-3">
                   <div className="flex items-center gap-1.5 text-gray-500 text-sm font-medium">
-                    <ShieldCheck className="w-4 h-4 text-green-500" />
+                    <Shield className="w-4 h-4 text-green-500" />
                     <span>Identité vérifiée</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-gray-500 text-sm font-medium">

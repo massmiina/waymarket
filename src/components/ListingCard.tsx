@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Heart, MapPin, ShieldCheck, Trash2 } from 'lucide-react';
+import { Heart, MapPin, Shield, Trash2 } from 'lucide-react';
 import { Listing } from '@/contexts/MarketContext';
 import { useMarket } from '@/contexts/MarketContext';
 
@@ -48,7 +48,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
           </div>
           {listing.seller?.isPro && (
             <div className="bg-gradient-to-r from-glacier to-indigo-600 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-[0.15em] text-white shadow-xl shadow-glacier/30 flex items-center gap-1.5 animate-in slide-in-from-top-2 duration-700 ring-2 ring-white/20">
-              <ShieldCheck className="h-3.5 w-3.5" />
+              <Shield className="h-3.5 w-3.5" />
               Pro
             </div>
           )}

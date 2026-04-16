@@ -4,7 +4,7 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import { useMarket } from '@/contexts/MarketContext';
 import { 
-  ShieldCheck, 
+  Shield, 
   Image as ImageIcon, 
   Zap, 
   Star, 
@@ -146,7 +146,7 @@ export default function ProPage() {
 
                   <div className="flex gap-4">
                     <div className="w-12 h-12 bg-glacier/10 rounded-2xl flex items-center justify-center shrink-0">
-                      <ShieldCheck className="w-6 h-6 text-glacier" />
+                      <Shield className="w-6 h-6 text-glacier" />
                     </div>
                     <div>
                       <h3 className="font-bold text-slate-900 mb-1">Badge de Confiance</h3>

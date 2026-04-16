@@ -41,9 +41,11 @@ export default function Home() {
     const matchesPrice = maxPrice === '' || listing.price <= Number(maxPrice);
     const matchesLocation = locationQuery === '' || listing.location.toLowerCase().includes(locationQuery.toLowerCase());
     
+    // Cast details to any for flexible cross-category filtering
+    const details = (listing.details as any) || {};
+
     // Vehicle Specific Filtering
-    if (activeCategory === 'Véhicules') {
-      const details = listing.details || {};
+    if (activeCategory === 'Véhicules' && listing.category === 'Véhicules') {
       const matchesBrand = brandQuery === '' || details.brand === brandQuery;
       const matchesModel = modelQuery === '' || details.model === modelQuery;
       const matchesMileage = maxMileage === '' || (details.mileage as number) <= Number(maxMileage);
@@ -55,8 +57,7 @@ export default function Home() {
       return matchesCategory && matchesSearch && matchesPrice && matchesLocation && matchesBrand && matchesModel && matchesMileage && matchesYear && matchesFuel && matchesGearbox && matchesColor;
     }
 
-    // Generic Color & Size Filtering
-    const details = listing.details || {};
+    // Generic Color & Size Filtering (for applicable categories)
     const matchesColor = colorQuery === '' || details.color === colorQuery;
     const matchesSize = sizeQuery === '' || details.size === sizeQuery;
                           
