@@ -57,29 +57,29 @@ export default function MobileNavbar() {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[60] sm:hidden">
       {/* Background with Blur - Glassmorphism */}
-      <div className="absolute inset-0 bg-white/80 backdrop-blur-xl border-t border-slate-100/50"></div>
+      <div className="absolute inset-0 bg-white/90 backdrop-blur-2xl border-t border-slate-100/50"></div>
       
       {/* Safe Area Container */}
-      <div className="relative flex items-center justify-around h-20 pb-safe px-2">
+      <div className="relative flex items-center justify-around h-16 pb-safe px-1">
         
         <NavItem href="/" icon={Home} label="Accueil" />
         
         <Link 
           href="/" 
-          className="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400"
+          className="flex flex-col items-center justify-center gap-0.5 w-full h-full text-slate-400"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
-          <Search className="h-6 w-6" />
-          <span className="text-[9px] font-black uppercase tracking-tighter">Découvrir</span>
+          <Search className="h-5 w-5" />
+          <span className="text-[8px] font-black uppercase tracking-tighter">Découvrir</span>
         </Link>
         
         {/* Floating Action Button for Sell */}
-        <div className="relative -top-6">
+        <div className="relative -top-5">
           <Link 
             href="/create"
-            className="flex items-center justify-center w-14 h-14 bg-peaks text-white rounded-2xl shadow-2xl shadow-peaks/40 ring-4 ring-white transition-all hover:scale-105 active:scale-95"
+            className="flex items-center justify-center w-12 h-12 bg-peaks text-white rounded-full shadow-2xl shadow-peaks/40 ring-4 ring-white transition-all hover:scale-105 active:scale-95"
           >
-            <Plus className="h-7 w-7 stroke-[3px]" />
+            <Plus className="h-6 w-6 stroke-[3px]" />
           </Link>
         </div>
         

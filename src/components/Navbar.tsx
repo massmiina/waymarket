@@ -85,11 +85,11 @@ export default function Navbar() {
   return (
     <nav className="glass-card sticky top-0 z-50 border-none shadow-none">
       <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="flex justify-between items-center h-16 sm:h-20">
+        <div className="flex justify-between items-center h-14 sm:h-20">
           
           {/* Final Perfect Logo - Pure Line Art (v7) */}
-          <Link href="/" className="flex-shrink-0 flex items-center gap-3 group">
-            <div className="bg-white rounded-2xl group-hover:bg-glacier transition-colors duration-500 shadow-lg shadow-slate-200/20 overflow-hidden flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
+          <Link href="/" className="flex-shrink-0 flex items-center gap-2 sm:gap-3 group">
+            <div className="bg-white rounded-xl sm:rounded-2xl group-hover:bg-glacier transition-colors duration-500 shadow-lg shadow-slate-200/20 overflow-hidden flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0">
               <Image 
                 src="/images/tower-logo-v7.png" 
                 alt="Way Market Tower" 
@@ -98,7 +98,7 @@ export default function Navbar() {
                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
               />
             </div>
-            <span className="font-black text-lg sm:text-xl tracking-tighter text-slate-900 leading-none">
+            <span className="font-black text-base sm:text-xl tracking-tighter text-slate-900 leading-none">
               Way Market
             </span>
           </Link>

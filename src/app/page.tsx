@@ -73,17 +73,17 @@ export default function Home() {
       <Navbar />
       
       {/* ULTRA-MINIMALIST HERO */}
-      <section className="relative h-[65vh] flex items-center justify-center overflow-hidden bg-[#f0f4f8]">
+      <section className="relative h-[45vh] sm:h-[65vh] flex items-center justify-center overflow-hidden bg-[#f0f4f8]">
         {/* Background Atmosphere */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-slate-200/50 via-white to-white"></div>
           {/* Subtle Mountain Jagged Pattern */}
-          <div className="absolute bottom-0 left-0 right-0 h-[40vh] mountain-jagged bg-slate-100 opacity-20"></div>
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-glacier/5 blur-[120px] rounded-full"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[20vh] sm:h-[40vh] mountain-jagged bg-slate-100 opacity-20"></div>
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-glacier/5 blur-[80px] sm:blur-[120px] rounded-full"></div>
         </div>
 
-        <div className="relative z-10 w-full max-w-2xl px-6">
-          <div className="glass-card p-2 rounded-[2.5rem] shadow-2xl shadow-slate-200/50">
+        <div className="relative z-10 w-full max-w-2xl px-4 sm:px-6">
+          <div className="glass-card p-1.5 sm:p-2 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-slate-200/50">
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-slate-300 group-focus-within:text-glacier transition-colors" />
