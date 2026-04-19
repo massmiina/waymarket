@@ -48,6 +48,7 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
   const [messageSent, setMessageSent] = useState(false);
 
   if (!listing) {
+    return (
       <div className="min-h-screen bg-background">
         <div className="flex justify-center items-center h-[calc(100vh-64px)]">
           <div className="text-center">
@@ -58,7 +59,7 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
             </button>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 

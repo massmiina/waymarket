@@ -5,9 +5,10 @@ import { logAdminAction } from '@/lib/admin';
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const auth = await currentUser();
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -18,7 +19,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { id } = params;
+    // const { id } = params;
     const { role, isPro, isBanned } = await request.json();
 
     const oldUser = await db.user.findUnique({ where: { id } });
@@ -50,9 +51,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const auth = await currentUser();
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -63,7 +65,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { id } = params;
+    // const { id } = params;
     const userToDelete = await db.user.findUnique({ where: { id } });
 
     if (!userToDelete) return NextResponse.json({ error: 'User not found' }, { status: 404 });
