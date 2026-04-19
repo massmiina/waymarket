@@ -10,6 +10,22 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'via.placeholder.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.clerk.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'utfs.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.uploadthing.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ui-avatars.com',
       }
     ]
   }

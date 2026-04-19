@@ -23,6 +23,28 @@ model User {
   listings            Listing[]      @relation("UserListings")
   messagesReceived    Message[]      @relation("MessagesReceived")
   messagesSent        Message[]      @relation("MessagesSent")
+  isBanned            Boolean        @default(false)
+  adminActions        AdminLog[]     @relation("AdminActions")
+  subscriptions       SubscriptionRecord[]
+}
+
+model SubscriptionRecord {
+  id        String   @id @default(uuid())
+  userId    String
+  amount    Float    @default(19.99)
+  status    String   @default("SUCCEEDED") // SUCCEEDED, FAILED, PENDING
+  plan      String   @default("PRO_MONTHLY")
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AdminLog {
+  id        String   @id @default(uuid())
+  adminId   String
+  action    String   // e.g. "BAN_USER", "PRO_TOGGLE", "DELETE_LISTING"
+  details   String   // JSON string with more info
+  createdAt DateTime @default(now())
+  admin     User     @relation("AdminActions", fields: [adminId], references: [id], onDelete: Cascade)
 }
 
 model Listing {
@@ -39,7 +61,7 @@ model Listing {
   sellerId      String
   conversations Conversation[]
   favoritedBy   Favorite[]
-  seller        User           @relation("UserListings", fields: [sellerId], references: [id])
+  seller        User           @relation("UserListings", fields: [sellerId], references: [id], onDelete: Cascade)
   messages      Message[]
 }
 
@@ -49,7 +71,7 @@ model Favorite {
   listingId String
   createdAt DateTime @default(now())
   listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, listingId])
 }
@@ -61,8 +83,8 @@ model Conversation {
   sellerId  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  seller    User      @relation("SellerConversations", fields: [sellerId], references: [id])
-  buyer     User      @relation("BuyerConversations", fields: [buyerId], references: [id])
+  seller    User      @relation("SellerConversations", fields: [sellerId], references: [id], onDelete: Cascade)
+  buyer     User      @relation("BuyerConversations", fields: [buyerId], references: [id], onDelete: Cascade)
   listing   Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
   messages  Message[]
 
@@ -79,7 +101,7 @@ model Message {
   receiverId     String
   listingId      String
   listing        Listing      @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  receiver       User         @relation("MessagesReceived", fields: [receiverId], references: [id])
-  sender         User         @relation("MessagesSent", fields: [senderId], references: [id])
+  receiver       User         @relation("MessagesReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender         User         @relation("MessagesSent", fields: [senderId], references: [id], onDelete: Cascade)
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }

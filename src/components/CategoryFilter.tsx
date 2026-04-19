@@ -23,21 +23,21 @@ interface CategoryFilterProps {
 
 export default function CategoryFilter({ activeCategory, onSelect }: CategoryFilterProps) {
   return (
-    <div className="grid grid-cols-3 sm:flex sm:overflow-x-auto py-2 sm:py-4 hide-scrollbar gap-2 sm:gap-4">
+    <div className="grid grid-cols-3 sm:flex sm:overflow-x-auto py-2 sm:py-4 hide-scrollbar gap-2 sm:gap-3">
       {categories.map((cat) => (
         <button
           key={cat.name}
           onClick={() => onSelect(cat.name)}
-          className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl sm:rounded-2xl transition border ${
+          className={`flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl sm:rounded-3xl transition-all duration-300 border-2 ${
             activeCategory === cat.name
-              ? 'bg-glacier/5 border-glacier/20 text-glacier font-black uppercase tracking-widest'
-              : 'bg-white/50 border-slate-100 text-slate-400 hover:bg-slate-50 hover:text-slate-900 font-bold uppercase tracking-widest'
+              ? 'bg-emerald border-emerald text-white shadow-xl shadow-emerald/20 transform scale-[1.05] z-10'
+              : 'bg-white border-slate-50 text-slate-400 hover:border-emerald/20 hover:text-emerald font-bold uppercase tracking-widest'
           }`}
         >
-          <div className="transform scale-90 sm:scale-100">
+          <div className={`transition-transform duration-500 ${activeCategory === cat.name ? 'scale-110' : 'group-hover:scale-110'}`}>
             {cat.icon}
           </div>
-          <span className="text-[8px] sm:text-xs text-center line-clamp-1">{cat.name}</span>
+          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] text-center line-clamp-1 mt-1">{cat.name}</span>
         </button>
       ))}
     </div>

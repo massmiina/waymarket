@@ -21,12 +21,22 @@ export async function GET() {
     }
 
     // 1. Fetch Key Stats
-    const [totalUsers, totalListings, totalMessages, proUsers] = await Promise.all([
+    const [totalUsers, totalListings, totalMessages, proUsers, revRecords] = await Promise.all([
       db.user.count(),
-      db.listing.count(),
+      db.listing.count({ where: { status: 'ACTIVE' } }),
       db.message.count(),
-      db.user.count({ where: { isPro: true } })
+      db.user.count({ where: { isPro: true } }),
+      db.subscriptionRecord.findMany()
     ]);
+
+    // Financial Calculation
+    const totalRevenue = revRecords.reduce((acc, curr) => acc + curr.amount, 0);
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const monthlyRevenue = revRecords
+      .filter(r => r.createdAt >= thirtyDaysAgo)
+      .reduce((acc, curr) => acc + curr.amount, 0);
+
+    const conversionRate = totalUsers > 0 ? (proUsers / totalUsers) * 100 : 0;
 
     // 2. Fetch Recent Activity (last 6 of each)
     const [recentListings, recentUsers] = await Promise.all([
@@ -72,19 +82,23 @@ export async function GET() {
       const nextDay = new Date(date);
       nextDay.setDate(nextDay.getDate() + 1);
 
-      const [userCount, listingCount] = await Promise.all([
+      const [userCount, listingCount, dayRevenue] = await Promise.all([
         db.user.count({
-          where: { memberSince: { gte: date, lt: nextDay } }
+          where: { memberSince: { lt: nextDay } } // Total users up to that point
         }),
         db.listing.count({
+          where: { createdAt: { lt: nextDay }, status: 'ACTIVE' } // Total active listings up to that point
+        }),
+        db.subscriptionRecord.findMany({
           where: { createdAt: { gte: date, lt: nextDay } }
         })
       ]);
 
       chartData.push({
-        name: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+        name: date.toLocaleDateString('fr-FR', { weekday: 'short' }),
         users: userCount,
-        listings: listingCount
+        listings: listingCount,
+        revenue: dayRevenue.reduce((acc, curr) => acc + curr.amount, 0)
       });
     }
 
@@ -93,19 +107,24 @@ export async function GET() {
         totalUsers,
         totalListings,
         totalMessages,
-        proUsers
+        proUsers,
+        totalRevenue: Math.round(totalRevenue * 100) / 100,
+        monthlyRevenue: Math.round(monthlyRevenue * 100) / 100,
+        conversionRate: Math.round(conversionRate * 10) / 10
       },
       activity: activity.slice(0, 10),
       chartData,
       pendingListings: await db.listing.findMany({
-        where: { status: 'PENDING_REVIEW' },
+        where: { status: { in: ['PENDING_REVIEW', 'SUSPICIOUS'] } }, // Include both
         orderBy: { createdAt: 'desc' },
         include: { seller: { select: { name: true, avatarUrl: true } } }
-      }).then(list => list.map(l => ({
-        ...l,
-        images: JSON.parse(l.images),
-        details: JSON.parse(l.details || '{}')
-      })))
+      }).then(list => list.map(l => {
+        let images = [];
+        let details = {};
+        try { images = JSON.parse(l.images); } catch(e) { console.error('JSON Parse Error (Images):', l.id); }
+        try { details = JSON.parse(l.details || '{}'); } catch(e) { console.error('JSON Parse Error (Details):', l.id); }
+        return { ...l, images, details };
+      }))
     });
 
   } catch (error) {

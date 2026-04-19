@@ -31,8 +31,8 @@ export async function GET(request: Request) {
           orderBy: { createdAt: 'desc' },
           take: 1
         },
-        buyer: { select: { name: true, avatarUrl: true } },
-        seller: { select: { name: true, avatarUrl: true } }
+        buyer: { select: { name: true, avatarUrl: true, isPro: true } },
+        seller: { select: { name: true, avatarUrl: true, isPro: true } }
       },
       orderBy: { updatedAt: 'desc' }
     });

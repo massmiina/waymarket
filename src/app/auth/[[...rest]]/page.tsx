@@ -1,21 +1,19 @@
 'use client';
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
 import { SignIn } from '@clerk/nextjs';
 
 export default function AuthPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Navbar />
+    <div className="min-h-screen bg-background flex flex-col">
       <div className="flex-grow flex items-center justify-center p-4">
         <SignIn 
           appearance={{
             elements: {
-              formButtonPrimary: 'bg-indigo-600 hover:bg-indigo-700 text-sm font-bold rounded-xl h-12',
-              card: 'shadow-sm border border-gray-100 rounded-2xl',
-              headerTitle: 'text-gray-900 font-extrabold',
-              headerSubtitle: 'text-gray-500',
+              formButtonPrimary: 'bg-emerald hover:bg-emerald-hover text-sm font-black rounded-xl h-12 shadow-neon uppercase tracking-widest transition-all',
+              card: 'shadow-2xl shadow-emerald-900/5 border border-white rounded-[32px] overflow-hidden',
+              headerTitle: 'text-forest-green font-black tracking-tighter text-2xl font-[family-name:var(--font-playfair)] italic',
+              headerSubtitle: 'text-slate-400 font-medium',
             }
           }}
           fallbackRedirectUrl="/"

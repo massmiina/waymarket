@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
+import Link from 'next/link';
 import { useMarket } from '@/contexts/MarketContext';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { 
@@ -16,7 +16,6 @@ import {
   LogOut,
   Calendar
 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function AccountPage() {
@@ -36,10 +35,9 @@ export default function AccountPage() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
+      <div className="min-h-screen bg-background">
         <div className="flex items-center justify-center h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald"></div>
         </div>
       </div>
     );
@@ -55,33 +53,32 @@ export default function AccountPage() {
   };
 
   const DashboardCard = ({ icon: Icon, title, description, href, badge }: any) => (
-    <Link href={href} className="flex flex-col sm:flex-row items-center sm:items-center justify-between p-3 sm:p-5 bg-white border border-gray-100 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md hover:border-indigo-100 transition-all group active:scale-[0.98] text-center sm:text-left">
+    <Link href={href} className="flex flex-col sm:flex-row items-center sm:items-center justify-between p-3 sm:p-5 bg-white border border-slate-50 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md hover:border-emerald/10 transition-all group active:scale-[0.98] text-center sm:text-left">
       <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-5 w-full">
-        <div className="p-2 sm:p-3.5 bg-indigo-50 text-indigo-600 rounded-xl sm:rounded-2xl group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-inner">
+        <div className="p-2 sm:p-3.5 bg-emerald/10 text-emerald rounded-xl sm:rounded-2xl group-hover:bg-emerald group-hover:text-white transition-all duration-300 shadow-inner">
           <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
         <div className="flex flex-col min-w-0 w-full">
           <div className="flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
-            <h3 className="font-bold text-gray-900 text-sm sm:text-base truncate">{title}</h3>
+            <h3 className="font-bold text-forest-green text-sm sm:text-base truncate">{title}</h3>
             {badge > 0 && (
-              <span className="bg-red-500 text-white text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+              <span className="bg-emerald text-white text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold">
                 {badge}
               </span>
             )}
           </div>
-          <p className="text-[10px] sm:text-sm text-gray-500 line-clamp-1 hidden sm:block">{description}</p>
+          <p className="text-[10px] sm:text-sm text-forest-green/40 line-clamp-1 hidden sm:block">{description}</p>
         </div>
       </div>
     </Link>
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FD] flex flex-col">
-      <Navbar />
+    <div className="min-h-screen bg-background flex flex-col">
       
       <main className="w-full max-w-5xl mx-auto px-4 py-6 sm:py-12 flex-grow">
         {isSuccess && (
-          <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-glacier to-indigo-600 rounded-2xl sm:rounded-[2rem] text-white shadow-xl shadow-glacier/20 animate-in zoom-in duration-500 relative overflow-hidden">
+          <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-forest-green to-emerald rounded-2xl sm:rounded-[2rem] text-white shadow-xl shadow-emerald-900/10 animate-in zoom-in duration-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10">
               <Shield className="w-24 h-24 sm:w-32 sm:h-32" />
             </div>
@@ -90,7 +87,7 @@ export default function AccountPage() {
                 <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
               <div>
-                <h2 className="text-base sm:text-xl font-black uppercase tracking-widest mb-0.5 sm:mb-1">Félicitations !</h2>
+                <h2 className="text-base sm:text-xl font-black uppercase tracking-widest mb-0.5 sm:mb-1 font-[family-name:var(--font-playfair)] italic">Félicitations !</h2>
                 <p className="text-xs sm:font-medium text-white/90">Statut **Way Market Pro** actif.</p>
               </div>
             </div>
@@ -102,7 +99,7 @@ export default function AccountPage() {
           <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-12 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center sm:items-center justify-between gap-6 sm:gap-8 relative overflow-hidden">
             
             {/* Background Decoration */}
-            <div className="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-indigo-50/50 rounded-full -translate-y-1/2 translate-x-1/2 -z-0"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-emerald/5 rounded-full -translate-y-1/2 translate-x-1/2 -z-0"></div>
             
             <div className="flex items-center gap-4 sm:gap-8 z-10 w-full">
               {/* Avatar Clerk */}
@@ -119,27 +116,27 @@ export default function AccountPage() {
 
               <div className="text-left flex-grow min-w-0">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3">
-                  <h1 className="text-xl sm:text-4xl font-black text-gray-900 tracking-tight truncate w-full">
+                  <h1 className="text-xl sm:text-4xl font-black text-forest-green tracking-tight truncate w-full font-[family-name:var(--font-playfair)] italic">
                     {user.firstName}
                   </h1>
                   {currentUser?.isPro ? (
-                    <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-glacier text-white text-[8px] sm:text-[10px] font-black rounded-full uppercase tracking-widest shadow-lg shadow-glacier/20 flex items-center gap-1 animate-in zoom-in-50 duration-500">
+                    <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-emerald text-white text-[8px] sm:text-[10px] font-black rounded-full uppercase tracking-widest shadow-lg shadow-emerald/20 flex items-center gap-1">
                       <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       Pro
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-slate-100 text-slate-500 text-[8px] sm:text-[10px] font-bold rounded-full uppercase tracking-widest">
+                    <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-slate-100 text-forest-green/40 text-[8px] sm:text-[10px] font-bold rounded-full uppercase tracking-widest">
                       Perso
                     </span>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-3 mt-1.5 sm:mt-3">
-                  <div className="flex items-center gap-1 text-gray-400 text-[10px] sm:text-sm font-medium">
-                    <Shield className="w-3.5 h-3.5 text-green-500" />
+                  <div className="flex items-center gap-1 text-forest-green/30 text-[10px] sm:text-sm font-medium">
+                    <Shield className="w-3.5 h-3.5 text-emerald" />
                     <span className="hidden sm:inline">Identité vérifiée</span>
                   </div>
-                  <div className="flex items-center gap-1 text-gray-400 text-[10px] sm:text-sm font-medium">
-                    <Calendar className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1 text-forest-green/30 text-[10px] sm:text-sm font-medium">
+                    <Calendar className="w-3.5 h-3.5 text-emerald/30" />
                     <span>Depuis {new Date(user.createdAt!).getFullYear()}</span>
                   </div>
                 </div>
@@ -149,7 +146,7 @@ export default function AccountPage() {
                 <div className="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0">
                   <button 
                     onClick={() => router.push('/pro')}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-4 bg-glacier text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-900 transition shadow-xl shadow-glacier/20 active:scale-95 animate-pulse"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-4 bg-emerald text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-emerald-hover transition shadow-neon hover:shadow-neon-hover active:scale-95"
                   >
                     <span>{userCount < 1000 ? '⭐ Offre PRO (Gratuit)' : 'Devenir Pro'}</span>
                     <ChevronRight className="w-4 h-4" />
@@ -164,7 +161,7 @@ export default function AccountPage() {
         <div className="grid grid-cols-2 md:grid-cols-2 gap-4 sm:gap-6">
           
           <div className="col-span-2 sm:col-span-1 space-y-4 sm:space-y-6">
-            <h2 className="text-[10px] sm:text-sm font-black text-gray-400 uppercase tracking-widest ml-2">Ma Boutique</h2>
+            <h2 className="text-[10px] sm:text-sm font-black text-forest-green/40 uppercase tracking-widest ml-2">Ma Boutique</h2>
             <div className="grid grid-cols-2 sm:grid-cols-1 gap-3 sm:gap-4">
               <DashboardCard 
                 icon={ArchiveRestore} 
@@ -184,7 +181,7 @@ export default function AccountPage() {
           </div>
 
           <div className="col-span-2 sm:col-span-1 space-y-4 sm:space-y-6">
-            <h2 className="text-[10px] sm:text-sm font-black text-gray-400 uppercase tracking-widest ml-2">Activité</h2>
+            <h2 className="text-[10px] sm:text-sm font-black text-forest-green/40 uppercase tracking-widest ml-2">Activité</h2>
             <div className="grid grid-cols-2 sm:grid-cols-1 gap-3 sm:gap-4">
               <DashboardCard 
                 icon={Heart} 
@@ -209,8 +206,8 @@ export default function AccountPage() {
         {currentUser?.role === 'ADMIN' && (
           <div className="mt-8 sm:mt-12 space-y-4 sm:space-y-6 animate-in slide-in-from-bottom-4 duration-700">
             <div className="flex items-center gap-2 ml-2">
-              <Shield className="w-4 h-4 text-indigo-500" />
-              <h2 className="text-[10px] sm:text-sm font-black text-indigo-500 uppercase tracking-widest">Mon Hub Admin</h2>
+              <Shield className="w-4 h-4 text-emerald" />
+              <h2 className="text-[10px] sm:text-sm font-black text-emerald uppercase tracking-widest">Mon Hub Admin</h2>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:gap-4">
               <DashboardCard 
@@ -237,7 +234,7 @@ export default function AccountPage() {
 
       </main>
       
-      <footer className="w-full max-w-5xl mx-auto px-4 py-8 text-center text-gray-400 text-sm font-medium">
+      <footer className="w-full max-w-5xl mx-auto px-4 py-8 text-center text-forest-green/30 text-sm font-medium">
         <p>Way Market © 2026 - Sécurisé par Clerk</p>
       </footer>
     </div>

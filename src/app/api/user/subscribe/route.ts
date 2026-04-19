@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing User ID or Email' }, { status: 400 });
     }
 
-    // Upsert Pro status: Create user if missing, then toggle Pro
+    // 1. Update User to Pro status
     const user = await db.user.upsert({
       where: { id: userId },
       update: {
@@ -25,10 +25,20 @@ export async function POST(request: Request) {
         role: 'USER'
       }
     });
+    
+    // 2. FINANCIAL LOGGING: Record the sale
+    await db.subscriptionRecord.create({
+      data: {
+        userId: user.id,
+        amount: 19.99,
+        status: 'SUCCEEDED',
+        plan: 'PRO_MONTHLY'
+      }
+    });
 
     return NextResponse.json(user);
   } catch (error: any) {
-    console.error('Error in subscription upsert:', error);
+    console.error('Error in subscription flow:', error);
     return NextResponse.json({ 
       error: 'Activation failed', 
       details: error.message || error.toString() 

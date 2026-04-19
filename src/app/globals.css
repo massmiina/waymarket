@@ -1,52 +1,79 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f8fafc; /* Snow White / Ice */
-  --foreground: #0f172a; /* Obsidian / Deep Night */
-  
-  /* Caucasus Palette */
-  --peaks-slate: #2f3e46;
-  --peaks-dark: #354f52;
-  --glacier-blue: #00b4d8;
-  --walnut: #582f0e;
-  --snow: #f8f9fa;
+/* Native CSS Fallbacks for Indestructible Navigation */
+@media (min-width: 640px) {
+  .desktop-only { display: flex !important; }
+  .mobile-only { display: none !important; }
 }
 
-@theme inline {
+@media (max-width: 639px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+}
+
+:root {
+  /* Snow White / Ice */
+  --background: #f8fafc;
+  --foreground: #14532d;
+  
+  /* Caucasus / Emerald Elite Palette */
+  --emerald-primary: #059669; /* Emerald 600 */
+  --emerald-hover: #047857;   /* Emerald 700 */
+  --emerald-light: #10b981;   /* Emerald 500 */
+  --forest-green: #14532d;
+  --black-exclusive: #0f172a;
+}
+/* Tailwind v4 CSS Theme - Ignore "Unknown at rule" warnings from IDE */
+@theme {
+  /* Tailwind v4 Variable Mappings */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-peaks: var(--peaks-slate);
-  --color-glacier: var(--glacier-blue);
-  --color-walnut: var(--walnut);
+  --color-emerald: var(--emerald-primary);
+  --color-emerald-hover: var(--emerald-hover);
+  --color-emerald-neon: var(--emerald-light);
+  --color-forest-green: var(--forest-green);
+  --color-black-exclusive: var(--black-exclusive);
+  --color-peaks: var(--emerald-primary);
+  --color-glacier: var(--emerald-hover);
 }
 
-@utility mountain-jagged {
-  clip-path: polygon(0 15%, 5% 0, 10% 10%, 15% 0, 20% 18%, 25% 5%, 30% 12%, 35% 2%, 40% 20%, 45% 8%, 50% 15%, 55% 5%, 60% 18%, 65% 10%, 70% 22%, 75% 12%, 80% 20%, 85% 5%, 90% 15%, 95% 0, 100% 15%, 100% 100%, 0 100%);
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
 }
 
-@utility glass-card {
-  background-color: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+@layer utilities {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(5, 150, 101, 0.05);
+  }
+
+  /* Neon Effects */
+  .shadow-neon {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+  }
+
+  .shadow-neon-hover {
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
-@utility text-glow {
-  text-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
+.bg-grid-white {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255 / 0.04)'%3E%3Cpath d='M0 .5H31.5V32'/%3E%3C/svg%3E");
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
-}
-
-/* Custom Mountain Gradient Background */
-.bg-caucasus-sky {
-  background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
-}
-
-.mountain-mask {
-  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+.text-glow {
+  text-shadow: 0 0 10px rgba(5, 150, 105, 0.3);
 }

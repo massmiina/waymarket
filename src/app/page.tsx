@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 import ListingCard from '@/components/ListingCard';
 import ListingCardSkeleton from '@/components/ListingCardSkeleton';
 import CategoryFilter from '@/components/CategoryFilter';
@@ -82,77 +81,80 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
+    <div className="min-h-screen bg-background">
       
-      {/* ULTRA-MINIMALIST HERO */}
-      <section className="relative h-[45vh] sm:h-[65vh] flex items-center justify-center overflow-hidden bg-[#f0f4f8]">
-        {/* Background Atmosphere */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-200/50 via-white to-white"></div>
-          {/* Subtle Mountain Jagged Pattern */}
-          <div className="absolute bottom-0 left-0 right-0 h-[20vh] sm:h-[40vh] mountain-jagged bg-slate-100 opacity-20"></div>
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-glacier/5 blur-[80px] sm:blur-[120px] rounded-full"></div>
-        </div>
-
-        <div className="relative z-10 w-full max-w-2xl px-4 sm:px-6 flex flex-col items-center">
+      {/* ADAPTIVE SEARCH HERO (Ultra-Minimalist) */}
+      <section className="relative min-h-[30vh] flex flex-col pt-32 pb-12 sm:items-center sm:justify-center overflow-hidden bg-background">
+        <div className="relative z-10 w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 flex flex-col sm:items-center">
           
-          {/* LIMITED PRO OFFER CTA */}
-          {showOffer && !currentUser?.isPro && (
-            <Link 
-              href="/pro"
-              className="mb-8 flex items-center gap-3 px-6 py-2.5 bg-white/80 backdrop-blur-xl border border-glacier/30 rounded-full shadow-xl shadow-glacier/10 hover:shadow-glacier/20 hover:scale-105 transition-all duration-300 group animate-in slide-in-from-top-4 duration-1000"
-            >
-              <div className="w-8 h-8 bg-glacier rounded-full flex items-center justify-center shadow-lg shadow-glacier/30 group-hover:rotate-12 transition-transform">
-                <Crown className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex flex-col items-start leading-tight">
-                <span className="text-[10px] font-black text-glacier uppercase tracking-[0.15em]">Offre Limitée</span>
-                <span className="text-xs font-bold text-slate-900 leading-none">Commencer votre offre gratuite</span>
-              </div>
-            </Link>
-          )}
+          {/* Adaptive Search Bar (Only focal point) */}
+          <div className="w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div className="bg-white rounded-full shadow-[0_32px_80px_-20px_rgba(0,0,0,0.12)] border border-slate-100 p-2 group hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] transition-all duration-500">
+              <div className="flex items-center gap-4 px-2 sm:px-4">
+                
+                {/* Keyword Section (flex: 2) */}
+                <div className="flex-[2] min-w-0 group/field">
+                  <div className="flex items-center gap-3 px-4 py-3 bg-slate-50/50 rounded-full border border-transparent group-focus-within/field:border-emerald/20 group-focus-within/field:bg-white transition-all">
+                    <Search className="h-4 w-4 text-slate-300 group-focus-within/field:text-emerald" />
+                    <input
+                      type="text"
+                      placeholder="Article, marque..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full border-none focus:ring-0 bg-transparent text-forest-green font-bold text-sm placeholder:text-slate-400 placeholder:font-medium"
+                    />
+                  </div>
+                </div>
 
-          <div className="glass-card w-full p-1.5 sm:p-2 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-slate-200/50">
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-slate-300 group-focus-within:text-glacier transition-colors" />
+                {/* Location Section (flex: 1) */}
+                <div className="flex-1 min-w-0 group/field">
+                  <div className="flex items-center gap-3 px-4 py-3 bg-slate-50/50 rounded-full border border-transparent group-focus-within/field:border-emerald/20 group-focus-within/field:bg-white transition-all">
+                    <MapPin className="h-4 w-4 text-slate-300 group-focus-within/field:text-emerald" />
+                    <input
+                      type="text"
+                      placeholder="Ville, code postal"
+                      value={locationQuery}
+                      onChange={(e) => setLocationQuery(e.target.value)}
+                      className="w-full border-none focus:ring-0 bg-transparent text-forest-green font-bold text-sm placeholder:text-slate-400 placeholder:font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* Search Action */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+                    className={`hidden sm:flex p-4 rounded-full transition-all items-center justify-center ${
+                      isFiltersOpen 
+                        ? 'bg-emerald/10 text-emerald border border-emerald/20' 
+                        : 'bg-slate-50 text-slate-400 hover:bg-emerald/5 hover:text-emerald border border-transparent'
+                    }`}
+                    title="Filtres"
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />
+                  </button>
+                  <button className="h-12 w-12 sm:h-14 sm:w-14 bg-emerald text-white rounded-full flex items-center justify-center hover:bg-emerald-hover transition-all shadow-xl shadow-emerald/10 active:scale-95 group flex-shrink-0">
+                    <Search className="h-5 w-5" />
+                  </button>
+                </div>
+
               </div>
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full pl-14 pr-6 py-5 border-none rounded-[2rem] focus:ring-0 bg-transparent text-slate-900 font-bold text-xl placeholder-slate-300 transition-all"
-              />
             </div>
-          </div>
-          
-          {/* Quick Filters Toggle */}
-          <div className="mt-8 flex justify-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-             <div className="flex bg-white/50 backdrop-blur-sm p-1 rounded-full border border-slate-100 shadow-sm">
-                <button 
-                  onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                  className="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-glacier transition-colors"
-                >
-                  {isFiltersOpen ? 'Masquer les filtres' : 'Affiner la recherche'}
-                </button>
-             </div>
           </div>
         </div>
       </section>
 
       <main className="relative z-20 w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 py-12 flex-grow">
         
-        {/* Expanded Filters */}
+        {/* Expanded Filters (Minimalist Style) */}
         {isFiltersOpen && (
-          <div className="glass-card p-8 rounded-[2.5rem] shadow-xl shadow-slate-100 mb-12 animate-in fade-in zoom-in duration-300">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-background border-t border-b border-slate-50 py-12 px-4 mb-20 animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
               
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Localisation</label>
                 <div className="relative group">
-                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 group-focus-within:text-glacier">
+                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 group-focus-within:text-forest-green">
                       <MapPin className="h-4 w-4" />
                    </div>
                    <input
@@ -160,7 +162,7 @@ export default function Home() {
                     placeholder="Ex: Paris"
                     value={locationQuery}
                     onChange={(e) => setLocationQuery(e.target.value)}
-                    className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none placeholder:text-slate-200"
+                    className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-emerald bg-background font-bold transition-all focus:outline-none placeholder:text-slate-300"
                   />
                 </div>
               </div>
@@ -168,7 +170,7 @@ export default function Home() {
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Budget Max</label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 group-focus-within:text-glacier">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 group-focus-within:text-slate-900">
                     <Euro className="h-4 w-4" />
                   </div>
                   <input
@@ -176,7 +178,7 @@ export default function Home() {
                     placeholder="0"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
-                    className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none placeholder:text-slate-200"
+                    className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-emerald bg-background font-bold transition-all focus:outline-none placeholder:text-slate-300"
                   />
                 </div>
               </div>
@@ -193,7 +195,7 @@ export default function Home() {
                           setBrandQuery(e.target.value);
                           setModelQuery('');
                         }}
-                        className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none appearance-none cursor-pointer"
+                        className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-emerald bg-background font-bold transition-all focus:outline-none appearance-none cursor-pointer"
                       >
                         <option value="">Toutes</option>
                         {Object.keys(CAR_DATA).sort().map(brand => <option key={brand} value={brand}>{brand}</option>)}
@@ -215,7 +217,7 @@ export default function Home() {
                         placeholder="Ex: 100000"
                         value={maxMileage}
                         onChange={(e) => setMaxMileage(e.target.value)}
-                        className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none placeholder:text-slate-200"
+                        className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-background font-bold transition-all focus:outline-none placeholder:text-slate-200"
                       />
                     </div>
                   </div>
@@ -225,7 +227,7 @@ export default function Home() {
                     <select
                       value={fuelQuery}
                       onChange={(e) => setFuelQuery(e.target.value)}
-                      className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none appearance-none cursor-pointer"
+                      className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-background font-bold transition-all focus:outline-none appearance-none cursor-pointer"
                     >
                       <option value="">Tous</option>
                       {FUEL_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
@@ -237,7 +239,7 @@ export default function Home() {
                     <select
                       value={gearboxQuery}
                       onChange={(e) => setGearboxQuery(e.target.value)}
-                      className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none appearance-none cursor-pointer"
+                      className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-background font-bold transition-all focus:outline-none appearance-none cursor-pointer"
                     >
                       <option value="">Toutes</option>
                       {GEARBOX_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
@@ -253,7 +255,7 @@ export default function Home() {
                   <select
                     value={colorQuery}
                     onChange={(e) => setColorQuery(e.target.value)}
-                    className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none appearance-none cursor-pointer"
+                    className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-background font-bold transition-all focus:outline-none appearance-none cursor-pointer"
                   >
                     <option value="">Toutes</option>
                     {COLORS.map(color => <option key={color} value={color}>{color}</option>)}
@@ -266,7 +268,7 @@ export default function Home() {
                     <select
                       value={sizeQuery}
                       onChange={(e) => setSizeQuery(e.target.value)}
-                      className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none appearance-none cursor-pointer"
+                      className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-background font-bold transition-all focus:outline-none appearance-none cursor-pointer"
                     >
                       <option value="">Toutes</option>
                       {CLOTHING_SIZES.map(size => <option key={size} value={size}>{size}</option>)}
@@ -285,7 +287,7 @@ export default function Home() {
                     disabled={!brandQuery}
                     value={modelQuery}
                     onChange={(e) => setModelQuery(e.target.value)}
-                    className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none appearance-none cursor-pointer disabled:bg-slate-50 disabled:text-slate-300"
+                    className="block w-full pl-6 pr-10 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-background font-bold transition-all focus:outline-none appearance-none cursor-pointer disabled:bg-slate-50 disabled:text-slate-300"
                   >
                     <option value="">{brandQuery ? 'Tous les modèles' : 'Choisir une marque'}</option>
                     {brandQuery && CAR_DATA[brandQuery]?.map(model => <option key={model} value={model}>{model}</option>)}
@@ -302,49 +304,28 @@ export default function Home() {
                       placeholder="Ex: 2015"
                       value={minYear}
                       onChange={(e) => setMinYear(e.target.value)}
-                      className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-white font-bold transition-all focus:outline-none placeholder:text-slate-200"
+                      className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-glacier bg-background font-bold transition-all focus:outline-none placeholder:text-slate-200"
                     />
                   </div>
                 </div>
               </div>
             )}
 
-            <div className="mt-8 pt-8 border-t border-slate-50">
-              <CategoryFilter activeCategory={activeCategory} onSelect={(cat) => {
-                setActiveCategory(cat);
-                // Reset sub-filters when category changes
-                setBrandQuery('');
-                setModelQuery('');
-                setMaxMileage('');
-                setMinYear('');
-                setFuelQuery('');
-                setGearboxQuery('');
-                setColorQuery('');
-                setSizeQuery('');
-              }} />
-            </div>
           </div>
         )}
 
         {/* Categories Bar (Visible when main filters are hidden) */}
-        {!isFiltersOpen && (
-          <div className="mb-8 sm:mb-12 flex justify-center">
-            <div className="w-full max-w-xl bg-white/50 backdrop-blur-sm p-2 sm:p-1.5 rounded-[2rem] sm:rounded-full border border-slate-100">
-               <CategoryFilter activeCategory={activeCategory} onSelect={setActiveCategory} />
-            </div>
-          </div>
-        )}
 
-        {/* Listings Grid */}
+        {/* Listings Grid (Editorial Spacing) */}
         {isLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 sm:gap-12">
             {Array.from({ length: 12 }).map((_, i) => (
               <ListingCardSkeleton key={i} />
             ))}
           </div>
         ) : filteredListings.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-12 sm:gap-16">
               {filteredListings.map((listing) => (
                 <div key={listing.id} className="relative">
                   <ListingCard listing={listing} />
@@ -358,7 +339,7 @@ export default function Home() {
                 <button
                   onClick={handleLoadMore}
                   disabled={isMoreLoading}
-                  className="inline-flex items-center gap-2 px-10 py-4 bg-white border border-slate-200 rounded-full text-glacier font-black hover:bg-slate-50 transition shadow-xl shadow-peaks/5 active:scale-95 disabled:opacity-50 uppercase tracking-widest text-[10px]"
+                  className="inline-flex items-center gap-2 px-10 py-4 bg-background border border-slate-200 rounded-full text-glacier font-black hover:bg-slate-50 transition shadow-xl shadow-peaks/5 active:scale-95 disabled:opacity-50 uppercase tracking-widest text-[10px]"
                 >
                   {isMoreLoading ? (
                     <>
@@ -375,7 +356,7 @@ export default function Home() {
         ) : (
           <div className="text-center py-32 glass-card rounded-[3rem] border border-slate-50 shadow-xl shadow-slate-100/20">
             <div className="inline-flex p-6 rounded-full bg-slate-50 mb-6 font-bold text-3xl">🏔️</div>
-            <h3 className="text-xl font-black text-slate-900 mb-2 uppercase tracking-widest">Le calme avant la tempête</h3>
+            <h3 className="text-xl font-black text-forest-green mb-2 uppercase tracking-widest font-[family-name:var(--font-playfair)] italic">Le calme avant la tempête</h3>
             <p className="text-slate-400 text-sm font-medium">Aucune annonce ne correspond à votre recherche pour le moment.</p>
           </div>
         )}

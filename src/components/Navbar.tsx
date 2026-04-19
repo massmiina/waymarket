@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   Home,
-  Shield
+  Shield,
+  Search
 } from 'lucide-react';
 import { useMarket, Message } from '@/contexts/MarketContext';
 import Image from 'next/image';
@@ -37,13 +38,13 @@ export default function Navbar() {
         href="/favorites"
         onClick={closeMobileMenu}
         className={`flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest ${
-          pathname === '/favorites' ? 'text-glacier bg-glacier/5' : 'text-slate-400 hover:text-glacier hover:bg-slate-50'
+          pathname === '/favorites' ? 'text-emerald bg-emerald/10' : 'text-slate-400 hover:text-emerald hover:bg-emerald/5'
         }`}
       >
         <div className="relative">
-          <Heart className="h-4 w-4" />
+          <Heart className={`h-4 w-4 ${pathname === '/favorites' ? 'fill-emerald' : ''}`} />
           {favorites.length > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-glacier text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-black">
+            <span className="absolute -top-1.5 -right-1.5 bg-emerald text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-black">
               {favorites.length}
             </span>
           )}
@@ -52,27 +53,16 @@ export default function Navbar() {
       </Link>
 
       <Link
-        href="/mes-ventes"
-        onClick={closeMobileMenu}
-        className={`flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest ${
-          pathname === '/mes-ventes' ? 'text-glacier bg-glacier/5' : 'text-slate-400 hover:text-glacier hover:bg-slate-50'
-        }`}
-      >
-        <Package className="h-4 w-4" />
-        <span className="sm:hidden md:block">Mes ventes</span>
-      </Link>
-
-      <Link
         href="/messages"
         onClick={closeMobileMenu}
         className={`flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest ${
-          pathname === '/messages' ? 'text-glacier bg-glacier/5' : 'text-slate-400 hover:text-glacier hover:bg-slate-50'
+          pathname === '/messages' ? 'text-emerald bg-emerald/10' : 'text-slate-400 hover:text-emerald hover:bg-emerald/5'
         }`}
       >
         <div className="relative">
           <MessageCircle className="h-4 w-4" />
           {unreadMessagesCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-black">
+            <span className="absolute -top-1.5 -right-1.5 bg-slate-900 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-black">
               {unreadMessagesCount}
             </span>
           )}
@@ -87,9 +77,9 @@ export default function Navbar() {
       <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12">
         <div className="flex justify-between items-center h-14 sm:h-20">
           
-          {/* Final Perfect Logo - Pure Line Art (v7) */}
-          <Link href="/" className="flex-shrink-0 flex items-center gap-2 sm:gap-3 group">
-            <div className="bg-white rounded-xl sm:rounded-2xl group-hover:bg-glacier transition-colors duration-500 shadow-lg shadow-slate-200/20 overflow-hidden flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0">
+          {/* Restored Logo - Pure Line Art (v7) */}
+          <Link href="/" className="flex-shrink-0 flex items-center gap-2 sm:gap-4 group">
+            <div className="bg-white rounded-xl sm:rounded-2xl group-hover:bg-slate-900 transition-colors duration-500 shadow-lg shadow-slate-200/20 overflow-hidden flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0">
               <Image 
                 src="/images/tower-logo-v7.png" 
                 alt="Way Market Tower" 
@@ -98,20 +88,36 @@ export default function Navbar() {
                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
               />
             </div>
-            <span className="font-black text-base sm:text-xl tracking-tighter text-slate-900 leading-none">
-              Way Market
-            </span>
+            <div className="flex flex-col">
+              <span className="font-[family-name:var(--font-playfair)] italic font-bold text-lg sm:text-xl tracking-tight text-forest-green leading-none">
+                Way Market
+              </span>
+              <span className="font-bold text-[7px] uppercase tracking-[0.6em] text-slate-400 mt-2 animate-in fade-in duration-1000">
+                КАВКАЗ • ELITE
+              </span>
+            </div>
           </Link>
 
           {/* Minimalist Desktop Navigation */}
-          <div className="hidden sm:flex items-center space-x-1 md:space-x-4">
+          <div className="hidden sm:flex items-center space-x-1 md:space-x-4 desktop-only">
             <Link
               href="/"
               className={`px-4 py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest ${
-                pathname === '/' ? 'text-glacier' : 'text-slate-400 hover:text-glacier'
+                pathname === '/' ? 'text-emerald bg-emerald/10' : 'text-slate-400 hover:text-emerald hover:bg-emerald/5'
               }`}
             >
               Accueil
+            </Link>
+
+            {/* NEW ELITE SEARCH SECTION POSITIONED RIGHT AFTER ACCUEIL */}
+            <Link
+              href="/recherche"
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest ${
+                pathname === '/recherche' ? 'text-emerald bg-emerald/10' : 'text-slate-400 hover:text-emerald hover:bg-emerald/5'
+              }`}
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span>Recherche</span>
             </Link>
 
             <NavLinks />
@@ -121,7 +127,7 @@ export default function Navbar() {
                 {currentUser?.role === 'ADMIN' && (
                   <Link
                     href="/admin"
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full hover:bg-indigo-100 transition shadow-sm border border-indigo-100"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald/10 text-emerald rounded-full hover:bg-emerald/20 transition shadow-sm border border-emerald/20"
                     title="Console Admin"
                   >
                     <Shield className="h-3.5 w-3.5" />
@@ -130,9 +136,9 @@ export default function Navbar() {
                 )}
                 <Link
                   href="/compte"
-                  className="p-2 rounded-full text-slate-400 hover:text-glacier transition"
+                  className="p-2 rounded-full text-emerald hover:text-emerald-hover transition"
                 >
-                  <UserIcon className="h-5 w-5" />
+                  <UserIcon className="h-5 w-5 text-emerald" />
                 </Link>
                 <UserButton />
               </div>
@@ -140,7 +146,7 @@ export default function Navbar() {
             
             <Show when="signed-out">
               <SignInButton mode="modal">
-                <button className="px-5 py-2 rounded-xl font-bold text-[10px] text-glacier uppercase tracking-widest border border-glacier/20 hover:bg-glacier/5 transition">
+                <button className="px-5 py-2 rounded-xl font-bold text-[10px] text-emerald uppercase tracking-widest border border-emerald/20 hover:bg-emerald/5 transition">
                   Se connecter
                 </button>
               </SignInButton>
@@ -148,7 +154,7 @@ export default function Navbar() {
 
             <Link
               href="/create"
-              className="ml-4 flex items-center gap-2 px-6 py-2.5 rounded-full text-[10px] font-black bg-peaks text-white hover:bg-glacier shadow-lg shadow-peaks/5 transition-all uppercase tracking-widest"
+              className="ml-4 flex items-center gap-2 px-6 py-2.5 rounded-full text-[10px] font-black bg-emerald text-white hover:bg-emerald-hover shadow-neon hover:shadow-neon-hover transition-all uppercase tracking-widest"
             >
               <PlusCircle className="h-4 w-4" />
               <span>Vendre</span>
@@ -156,15 +162,15 @@ export default function Navbar() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex items-center sm:hidden gap-3">
-             {currentUser?.role === 'ADMIN' && (
-               <Link
-                href="/admin"
-                className="p-2 rounded-full bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100"
-              >
-                <Shield className="h-5 w-5" />
-              </Link>
-             )}
+              <div className="flex items-center sm:hidden gap-3 mobile-only">
+                 {currentUser?.role === 'ADMIN' && (
+                   <Link
+                    href="/admin"
+                    className="p-2 rounded-full bg-emerald/10 text-emerald shadow-sm border border-emerald/20"
+                  >
+                    <Shield className="h-5 w-5" />
+                  </Link>
+                 )}
             <Link
               href="/menu"
               className="p-2 text-slate-400 active:scale-90 transition-transform"

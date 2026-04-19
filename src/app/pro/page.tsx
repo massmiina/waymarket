@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
 import { useMarket } from '@/contexts/MarketContext';
 import { 
   Shield, 
@@ -99,8 +98,7 @@ export default function ProPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar />
+    <div className="min-h-screen bg-background flex flex-col">
       
       <main className="flex-grow">
         {/* Hero Section */}

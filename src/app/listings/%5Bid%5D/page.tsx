@@ -48,17 +48,16 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
   const [messageSent, setMessageSent] = useState(false);
 
   if (!listing) {
-      <div className="min-h-screen bg-background">
-        <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-          <div className="text-center">
-            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-black text-forest-green tracking-tight font-[family-name:var(--font-playfair)] italic">Annonce introuvable</h2>
-            <button onClick={() => router.push('/')} className="mt-4 text-emerald font-black uppercase tracking-widest text-[10px] hover:underline transition-all">
-              Retour à l&apos;accueil
-            </button>
-          </div>
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-black text-forest-green tracking-tight font-[family-name:var(--font-playfair)] italic">Annonce introuvable</h2>
+          <button onClick={() => router.push('/')} className="mt-4 text-emerald font-black uppercase tracking-widest text-[10px] hover:underline transition-all">
+            Retour à l&apos;accueil
+          </button>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -121,8 +120,7 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
   if (details.style) specs.push({ label: 'Style', value: details.style, icon: Sparkles });
 
   return (
-    <div className="min-h-screen bg-background">
-      
+    <div className="min-h-screen bg-background font-sans">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumb / Back button */}
         <button 
@@ -338,7 +336,6 @@ export default function ListingDetail({ params }: { params: Promise<{ id: string
                 )}
               </div>
               
-              {/* Background Glow */}
               <div className="absolute top-[-20%] right-[-20%] w-[60%] h-[60%] bg-emerald/20 rounded-full blur-[80px] pointer-events-none"></div>
               <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-light/10 rounded-full blur-[80px] pointer-events-none"></div>
             </div>

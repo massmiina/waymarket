@@ -1,8 +1,10 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono, Outfit, Cinzel, Tenor_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { MarketProvider } from "@/contexts/MarketContext";
-import MobileNavbar from "@/components/MobileNavbar";
+import MobileNavbar from "@/components/Navbar"; // Keep for mobile logic if separate
+import Navbar from "@/components/Navbar";
+import "@uploadthing/react/styles.css";
 
 import { ClerkProvider } from '@clerk/nextjs'
 import { frFR } from '@clerk/localizations'
@@ -17,6 +19,27 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+});
+
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+});
+
+const tenorSans = Tenor_Sans({
+  variable: "--font-tenor-sans",
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Way Market | Le Prestige du Commerce Caucasien",
   description: "Découvrez Way Market, la marketplace d'élite pour l'achat et la vente de biens d'exception. Véhicules, immobilier, luxe et produits locaux au cœur du terroir.",
@@ -28,6 +51,11 @@ export const metadata: Metadata = {
   }
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -37,12 +65,15 @@ export default function RootLayout({
     <ClerkProvider localization={frFR}>
       <html
         lang="fr"
-        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} ${cinzel.variable} ${tenorSans.variable} ${playfair.variable} h-full antialiased`}
       >
-        <body className="min-h-full flex flex-col bg-gray-50 text-gray-900 pb-20 sm:pb-0">
+        <body className="min-h-full flex flex-col antialiased">
           <MarketProvider>
+            <Navbar />
             {children}
-            <MobileNavbar />
+            <div className="sm:hidden">
+              <MobileNavbar />
+            </div>
           </MarketProvider>
         </body>
       </html>

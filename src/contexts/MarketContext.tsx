@@ -127,6 +127,7 @@ export interface Conversation {
   otherUser: {
     name: string;
     avatarUrl: string | null;
+    isPro: boolean;
   };
   otherUserId: string;
   lastMessage?: Message;

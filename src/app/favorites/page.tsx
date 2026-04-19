@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
 import ListingCard from '@/components/ListingCard';
 import { useMarket } from '@/contexts/MarketContext';
 import { Heart } from 'lucide-react';
@@ -15,18 +14,23 @@ export default function FavoritesPage() {
   const favoriteListings = listings.filter(l => favorites.includes(l.id));
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Navbar />
-      <main className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 py-8 flex-grow w-full">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="bg-red-100 p-3 rounded-full text-red-500">
-            <Heart className="w-6 h-6 fill-red-500" />
+    <div className="min-h-screen bg-background flex flex-col font-sans">
+      <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow w-full">
+        
+        {/* Header Area (Messagerie Style) */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-black text-forest-green tracking-tighter leading-none font-[family-name:var(--font-playfair)] italic">Mes Favoris</h1>
+            <p className="text-[10px] font-black text-emerald/40 uppercase tracking-[0.2em]">Votre collection privée</p>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Mes Favoris</h1>
+          <div className="px-5 py-2.5 bg-white rounded-2xl border border-slate-100 shadow-sm text-[10px] font-black uppercase tracking-widest text-forest-green/40 flex items-center gap-2">
+            <Heart className="h-3.5 w-3.5 fill-emerald text-emerald" />
+            {favoriteListings.length} Article{favoriteListings.length > 1 ? 's' : ''}
+          </div>
         </div>
 
         {favoriteListings.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {favoriteListings.map(listing => (
               <div key={listing.id} className="relative">
                 <ListingCard listing={listing} />
@@ -34,14 +38,19 @@ export default function FavoritesPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center shadow-sm">
-            <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucun favori pour le moment</h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
-              Vous n&apos;avez pas encore ajouté d&apos;annonces à vos favoris. Parcourez nos annonces et cliquez sur le cœur pour les sauvegarder ici.
+          <div className="py-24 text-center bg-white rounded-[44px] shadow-2xl shadow-emerald/5 border border-white">
+            <div className="w-24 h-24 bg-emerald/5 rounded-[32px] flex items-center justify-center mx-auto mb-8">
+              <Heart className="h-10 w-10 text-emerald/20" />
+            </div>
+            <h3 className="text-2xl font-black text-forest-green tracking-tight mb-3 font-[family-name:var(--font-playfair)] italic">Votre cœur est vide</h3>
+            <p className="text-forest-green/40 font-medium mb-10 max-w-xs mx-auto text-sm leading-relaxed">
+              Ajoutez des annonces à vos favoris pour les retrouver facilement ici.
             </p>
-            <Link href="/" className="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition">
-              Découvrir les annonces
+            <Link 
+              href="/" 
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-emerald text-white font-black rounded-2xl hover:bg-emerald-hover transition-all shadow-xl shadow-emerald/10 active:scale-95 text-[10px] uppercase tracking-widest font-[family-name:var(--font-outfit)]"
+            >
+              Parcourir les annonces
             </Link>
           </div>
         )}

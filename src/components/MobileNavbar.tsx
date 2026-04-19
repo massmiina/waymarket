@@ -44,7 +44,7 @@ export default function MobileNavbar() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] flex sm:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] flex sm:hidden mobile-only">
       {/* Background with Blur - Glassmorphism */}
       <div className="absolute inset-0 bg-white/95 backdrop-blur-2xl border-t border-slate-100/50"></div>
       
@@ -66,7 +66,7 @@ export default function MobileNavbar() {
         <div className="relative -top-5">
           <Link 
             href="/create"
-            className="flex items-center justify-center w-12 h-12 bg-peaks text-white rounded-full shadow-2xl shadow-peaks/40 ring-4 ring-white transition-all hover:scale-105 active:scale-95"
+            className="flex items-center justify-center w-12 h-12 bg-emerald text-white rounded-full shadow-neon hover:shadow-neon-hover ring-4 ring-white transition-all hover:scale-105 active:scale-95"
           >
             <Plus className="h-6 w-6 stroke-[3px]" />
           </Link>

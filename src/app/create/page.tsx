@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Navbar from '@/components/Navbar';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMarket, Category } from '@/contexts/MarketContext';
 import { 
@@ -38,13 +38,18 @@ import {
   STORAGE_CAPACITIES,
   HEATING_TYPES
 } from "@/lib/constants";
-import "@uploadthing/react/styles.css";
 
 export default function CreateListing() {
   const router = useRouter();
-  const { currentUser } = useMarket();
+  const { currentUser, isLoading } = useMarket();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && !currentUser) {
+      router.push('/auth');
+    }
+  }, [currentUser, isLoading, router]);
 
   // Form State
   const [category, setCategory] = useState<Category | null>(null);
@@ -201,12 +206,23 @@ export default function CreateListing() {
     }
   };
 
+  if (isLoading) return (
+    <div className="min-h-screen bg-background">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12 flex flex-col items-center">
+        <div className="w-full h-10 bg-slate-100 rounded-2xl mb-8 animate-pulse max-w-sm"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+          <div className="h-[400px] bg-white rounded-[2.5rem] border border-slate-50 shadow-sm animate-pulse"></div>
+          <div className="h-[400px] bg-white rounded-[2.5rem] border border-slate-50 shadow-sm animate-pulse"></div>
+        </div>
+      </main>
+    </div>
+  );
+
   if (!currentUser) return null;
 
   if (success) {
     return (
       <div className="min-h-screen bg-white">
-        <Navbar />
         <div className="flex flex-col items-center justify-center pt-32 px-4 text-center">
           <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
             <CheckCircle className="h-12 w-12 text-green-600" />
@@ -222,8 +238,7 @@ export default function CreateListing() {
   const photoSlots = Array.from({ length: maxPhotos });
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      <Navbar />
+    <div className="min-h-screen bg-background">
       
       {/* Hidden File Input */}
       <input 
@@ -237,8 +252,8 @@ export default function CreateListing() {
 
       {/* Dynamic Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-100/40 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-pink-100/40 rounded-full blur-[120px]"></div>
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-forest-green/10 rounded-full blur-[120px]"></div>
       </div>
 
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12">
@@ -248,21 +263,21 @@ export default function CreateListing() {
           {/* Main Form Area */}
           <div className="flex-1 space-y-6 sm:space-y-8 pb-32">
             <div className="mb-8 sm:mb-12">
-              <h1 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight mb-2 sm:mb-4 leading-tight">
-                Vendre un <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">trésor</span>
+              <h1 className="text-4xl sm:text-6xl font-black text-forest-green tracking-tight mb-2 sm:mb-4 leading-tight font-[family-name:var(--font-playfair)] italic">
+                Vendre un <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-light to-forest-green">trésor</span>
               </h1>
-              <p className="text-base sm:text-xl text-gray-500 font-medium">Postez votre annonce en quelques secondes.</p>
+              <p className="text-base sm:text-xl text-slate-500 font-medium">L&apos;excellence du commerce authentique commence ici.</p>
             </div>
 
             {/* SECTION 1: CATEGORY */}
-            <div className="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-indigo-100/50 rounded-[32px] p-8 md:p-10">
+            <div className="bg-white/80 backdrop-blur-xl border border-white shadow-2xl shadow-emerald-900/5 rounded-[32px] p-8 md:p-10">
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+                <div className="w-12 h-12 bg-forest-green rounded-2xl flex items-center justify-center text-emerald-light shadow-lg shadow-emerald-900/20">
                   <Tag className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">1. Catégorie</h2>
-                  <p className="text-gray-500 font-medium">Choisissez ce qui décrit le mieux votre objet</p>
+                  <h2 className="text-2xl font-black text-forest-green font-[family-name:var(--font-playfair)] italic">1. Catégorie</h2>
+                  <p className="text-slate-500 font-medium text-sm">Choisissez la nature de votre trésor</p>
                 </div>
               </div>
 
@@ -280,12 +295,12 @@ export default function CreateListing() {
                       }}
                       className={`flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all duration-300 ${
                         isSelected 
-                          ? 'border-indigo-600 bg-indigo-600 text-white shadow-xl shadow-indigo-200 transform scale-[1.02]' 
-                          : 'border-gray-50 bg-white hover:border-indigo-200 hover:shadow-lg text-gray-600'
+                          ? 'border-emerald bg-emerald text-white shadow-neon transform scale-[1.02]' 
+                          : 'border-slate-50 bg-white hover:border-emerald/30 hover:shadow-lg text-slate-400 hover:text-emerald'
                       }`}
                     >
-                      <Icon className={`w-8 h-8 mb-3 ${isSelected ? 'text-white' : 'text-indigo-600'}`} />
-                      <span className="font-bold text-xs uppercase tracking-wider">{cat.label}</span>
+                      <Icon className={`w-8 h-8 mb-3 ${isSelected ? 'text-white' : 'text-emerald'}`} />
+                      <span className="font-black text-[10px] uppercase tracking-widest font-[family-name:var(--font-outfit)]">{cat.label}</span>
                     </button>
                   );
                 })}
@@ -294,14 +309,14 @@ export default function CreateListing() {
 
             {/* SECTION 2: PHOTOS */}
             <div className={`transition-all duration-500 ${category ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`}>
-              <div className="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-indigo-100/50 rounded-[32px] p-8 md:p-10">
+              <div className="bg-white/80 backdrop-blur-xl border border-white shadow-2xl shadow-emerald-900/5 rounded-[32px] p-8 md:p-10">
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 bg-pink-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-pink-200">
+                  <div className="w-12 h-12 bg-forest-green rounded-2xl flex items-center justify-center text-emerald-light shadow-lg shadow-emerald-900/20">
                     <ImageIcon className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">2. Photos</h2>
-                    <p className="text-gray-500 font-medium">Une belle photo = une vente 4x plus rapide</p>
+                    <h2 className="text-2xl font-black text-forest-green font-[family-name:var(--font-playfair)] italic">2. Photos</h2>
+                    <p className="text-slate-500 font-medium text-sm">Une belle photo captive l&apos;attention de l&apos;élite</p>
                   </div>
                 </div>
 
@@ -314,7 +329,7 @@ export default function CreateListing() {
                       
                       if (imageUrl) {
                         return (
-                          <div key={i} className={`relative aspect-square rounded-2xl overflow-hidden group shadow-md border-2 border-white transition-all hover:scale-[1.02] ${isFirst ? 'md:col-span-2 md:row-span-2 ring-4 ring-indigo-100' : ''}`}>
+                          <div key={i} className={`relative aspect-square rounded-2xl overflow-hidden group shadow-md border-2 border-white transition-all hover:scale-[1.02] ${isFirst ? 'md:col-span-2 md:row-span-2 ring-4 ring-emerald/10' : ''}`}>
                             <img src={imageUrl} alt={`Photo ${i+1}`} className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                               <button 
@@ -325,7 +340,7 @@ export default function CreateListing() {
                               </button>
                             </div>
                             {isFirst && (
-                              <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg">
+                              <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 bg-emerald text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg">
                                 Principale
                               </div>
                             )}
@@ -340,11 +355,11 @@ export default function CreateListing() {
                             key={i}
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isUploading}
-                            className={`aspect-square rounded-2xl border-2 border-dashed border-pink-200 bg-pink-50/30 flex flex-col items-center justify-center text-pink-400 gap-2 transition-all hover:bg-pink-50 hover:border-pink-300 group ${isFirst ? 'md:col-span-2 md:row-span-2 ring-4 ring-pink-50' : ''}`}
+                            className={`aspect-square rounded-2xl border-2 border-dashed border-emerald/20 bg-emerald/5 flex flex-col items-center justify-center text-emerald gap-2 transition-all hover:bg-emerald/10 hover:border-emerald/40 group ${isFirst ? 'md:col-span-2 md:row-span-2 ring-4 ring-emerald/5' : ''}`}
                           >
                             {isUploading ? (
                               <div className="flex flex-col items-center gap-2">
-                                <div className="w-8 h-8 border-4 border-pink-400 border-t-transparent rounded-full animate-spin"></div>
+                                <div className="w-8 h-8 border-4 border-emerald border-t-transparent rounded-full animate-spin"></div>
                                 <span className="text-[10px] font-black uppercase tracking-widest">{uploadProgress}%</span>
                               </div>
                             ) : (
@@ -352,7 +367,7 @@ export default function CreateListing() {
                                 <div className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center group-hover:scale-110 transition-transform">
                                   <UploadCloud className="w-6 h-6" />
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest">Ajouter</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest font-[family-name:var(--font-outfit)]">Ajouter</span>
                               </>
                             )}
                           </button>
@@ -371,132 +386,132 @@ export default function CreateListing() {
 
             {/* SECTION 3: CONTENT & DESCRIPTION */}
             <div className={`transition-all duration-500 ${images.length > 0 ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`} ref={detailsRef}>
-              <div className="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-indigo-100/50 rounded-[32px] p-8 md:p-10">
+              <div className="bg-white/80 backdrop-blur-xl border border-white shadow-2xl shadow-emerald-900/5 rounded-[32px] p-8 md:p-10">
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-amber-200">
+                  <div className="w-12 h-12 bg-forest-green rounded-2xl flex items-center justify-center text-emerald-light shadow-lg shadow-emerald-900/20">
                     <Info className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">3. Description</h2>
-                    <p className="text-gray-500 font-medium">Informations essentielles sur votre offre</p>
+                    <h2 className="text-2xl font-black text-forest-green font-[family-name:var(--font-playfair)] italic">3. Description</h2>
+                    <p className="text-slate-500 font-medium text-sm">Précisez les qualités de votre offre d&apos;exception</p>
                   </div>
                 </div>
 
                 <div className="grid gap-6">
                   {/* --- INTEGRATED VEHICLE SELECTORS --- */}
                   {category === 'Véhicules' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-indigo-50/50 rounded-[24px] border border-indigo-100 mb-4 animate-in fade-in zoom-in duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-emerald-50/20 rounded-[24px] border border-emerald/10 mb-4 animate-in fade-in zoom-in duration-300">
                       <div>
-                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Marque</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Marque</label>
                         <select 
                           value={String(details.brand || '')} 
                           onChange={e => {
                             handleDetailChange('brand', e.target.value);
                             handleDetailChange('model', ''); // Reset model on brand change
                           }} 
-                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none"
                         >
                           <option value="">Sélectionner une marque</option>
                           {Object.keys(CAR_DATA).sort().map(brand => <option key={brand} value={brand}>{brand}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Modèle</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Modèle</label>
                         <select 
                           value={String(details.model || '')} 
                           onChange={e => handleDetailChange('model', e.target.value)} 
                           disabled={!details.brand}
-                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none disabled:bg-gray-50 disabled:text-gray-400"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none disabled:bg-gray-50 disabled:text-gray-400"
                         >
                           <option value="">{details.brand ? 'Sélectionner un modèle' : 'Choisissez d\'abord la marque'}</option>
                           {details.brand && CAR_DATA[String(details.brand)]?.map(model => <option key={model} value={model}>{model}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Kilométrage</label>
-                        <input type="number" value={details.mileage as number || ''} onChange={e => handleDetailChange('mileage', Number(e.target.value))} className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 85000" />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Kilométrage</label>
+                        <input type="number" value={details.mileage as number || ''} onChange={e => handleDetailChange('mileage', Number(e.target.value))} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Ex: 85000" />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Année</label>
-                        <input type="number" value={details.year as number || ''} onChange={e => handleDetailChange('year', Number(e.target.value))} className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 2018" />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Année</label>
+                        <input type="number" value={details.year as number || ''} onChange={e => handleDetailChange('year', Number(e.target.value))} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Ex: 2018" />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Carburant</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Carburant</label>
                         <select 
                           value={String(details.fuelType || '')} 
                           onChange={e => handleDetailChange('fuelType', e.target.value)} 
-                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none cursor-pointer"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none cursor-pointer"
                         >
                           <option value="">Sélectionner</option>
                           {FUEL_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Boîte de vitesse</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Boîte de vitesse</label>
                         <select 
                           value={String(details.gearbox || '')} 
                           onChange={e => handleDetailChange('gearbox', e.target.value)} 
-                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none cursor-pointer"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none cursor-pointer"
                         >
                           <option value="">Sélectionner</option>
                           {GEARBOX_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Couleur</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Couleur</label>
                         <select 
                           value={String(details.color || '')} 
                           onChange={e => handleDetailChange('color', e.target.value)} 
-                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none cursor-pointer"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none cursor-pointer"
                         >
                           <option value="">Sélectionner</option>
                           {COLORS.map(type => <option key={type} value={type}>{type}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Crit&apos;Air</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Crit&apos;Air</label>
                         <select 
                           value={String(details.critair || '')} 
                           onChange={e => handleDetailChange('critair', e.target.value)} 
-                          className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all appearance-none cursor-pointer"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none cursor-pointer"
                         >
                           <option value="">Sélectionner</option>
                           {CRITAIR.map(type => <option key={type} value={type}>{type}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Puissance (ch)</label>
-                        <input type="number" value={details.hp as number || ''} onChange={e => handleDetailChange('hp', Number(e.target.value))} className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 110" />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Puissance (ch)</label>
+                        <input type="number" value={details.hp as number || ''} onChange={e => handleDetailChange('hp', Number(e.target.value))} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Ex: 110" />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ml-1">Places</label>
-                        <input type="number" value={details.seats as number || ''} onChange={e => handleDetailChange('seats', Number(e.target.value))} className="w-full bg-white border-2 border-indigo-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="5" />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Places</label>
+                        <input type="number" value={details.seats as number || ''} onChange={e => handleDetailChange('seats', Number(e.target.value))} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="5" />
                       </div>
                     </div>
                   )}
 
                   {category === 'Immobilier' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-amber-50/50 rounded-[24px] border border-amber-100 mb-4 animate-in fade-in zoom-in duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-emerald-50/20 rounded-[24px] border border-emerald/10 mb-4 animate-in fade-in zoom-in duration-300">
                       <div>
-                        <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">Type de bien</label>
-                        <input type="text" value={String(details.type || '')} onChange={e => handleDetailChange('type', e.target.value)} className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all" placeholder="Maison, Appartement..." />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Type de bien</label>
+                        <input type="text" value={String(details.type || '')} onChange={e => handleDetailChange('type', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Maison, Appartement..." />
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">Surface (m²)</label>
-                          <input type="number" value={details.surfaceArea as number || ''} onChange={e => handleDetailChange('surfaceArea', Number(e.target.value))} className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all" placeholder="75" />
+                          <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Surface (m²)</label>
+                          <input type="number" value={details.surfaceArea as number || ''} onChange={e => handleDetailChange('surfaceArea', Number(e.target.value))} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="75" />
                         </div>
                         <div>
-                          <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">Pièces</label>
-                          <input type="number" value={details.rooms as number || ''} onChange={e => handleDetailChange('rooms', Number(e.target.value))} className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all" placeholder="3" />
+                          <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Pièces</label>
+                          <input type="number" value={details.rooms as number || ''} onChange={e => handleDetailChange('rooms', Number(e.target.value))} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="3" />
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">Chauffage</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Chauffage</label>
                         <select 
                           value={String(details.heating || '')} 
                           onChange={e => handleDetailChange('heating', e.target.value)} 
-                          className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all appearance-none cursor-pointer"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none cursor-pointer"
                         >
                           <option value="">Sélectionner</option>
                           {HEATING_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
@@ -504,44 +519,44 @@ export default function CreateListing() {
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">Étage</label>
-                          <input type="number" value={details.floor as number || ''} onChange={e => handleDetailChange('floor', Number(e.target.value))} className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all" placeholder="2" />
+                          <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Étage</label>
+                          <input type="number" value={details.floor as number || ''} onChange={e => handleDetailChange('floor', Number(e.target.value))} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="2" />
                         </div>
                         <div>
-                          <label className="block text-xs font-black text-amber-500 uppercase tracking-widest mb-2 ml-1">DPE</label>
-                          <input type="text" value={String(details.energyClass || '')} onChange={e => handleDetailChange('energyClass', e.target.value)} className="w-full bg-white border-2 border-amber-50 rounded-2xl p-4 font-bold focus:border-amber-600 outline-none transition-all" placeholder="A, B, C..." />
+                          <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">DPE</label>
+                          <input type="text" value={String(details.energyClass || '')} onChange={e => handleDetailChange('energyClass', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="A, B, C..." />
                         </div>
                       </div>
                     </div>
                   )}
 
                   {category === 'Électronique' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-blue-50/50 rounded-[24px] border border-blue-100 mb-4 animate-in fade-in zoom-in duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-emerald-50/20 rounded-[24px] border border-emerald/10 mb-4 animate-in fade-in zoom-in duration-300">
                       <div>
-                        <label className="block text-xs font-black text-blue-500 uppercase tracking-widest mb-2 ml-1">Marque</label>
-                        <input type="text" value={String(details.brand || '')} onChange={e => handleDetailChange('brand', e.target.value)} className="w-full bg-white border-2 border-blue-50 rounded-2xl p-4 font-bold focus:border-blue-600 outline-none transition-all" placeholder="Apple, Samsung..." />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Marque</label>
+                        <input type="text" value={String(details.brand || '')} onChange={e => handleDetailChange('brand', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Apple, Samsung..." />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-blue-500 uppercase tracking-widest mb-2 ml-1">Modèle</label>
-                        <input type="text" value={String(details.model || '')} onChange={e => handleDetailChange('model', e.target.value)} className="w-full bg-white border-2 border-blue-50 rounded-2xl p-4 font-bold focus:border-blue-600 outline-none transition-all" placeholder="iPhone 15, Galaxy S23..." />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Modèle</label>
+                        <input type="text" value={String(details.model || '')} onChange={e => handleDetailChange('model', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="iPhone 15, Galaxy S23..." />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-blue-500 uppercase tracking-widest mb-2 ml-1">Capacité</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Capacité</label>
                         <select 
                           value={String(details.storage || '')} 
                           onChange={e => handleDetailChange('storage', e.target.value)} 
-                          className="w-full bg-white border-2 border-blue-50 rounded-2xl p-4 font-bold focus:border-blue-600 outline-none transition-all appearance-none cursor-pointer"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none cursor-pointer"
                         >
                           <option value="">Sélectionner</option>
                           {STORAGE_CAPACITIES.map(type => <option key={type} value={type}>{type}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-blue-500 uppercase tracking-widest mb-2 ml-1">Couleur</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Couleur</label>
                         <select 
                           value={String(details.color || '')} 
                           onChange={e => handleDetailChange('color', e.target.value)} 
-                          className="w-full bg-white border-2 border-blue-50 rounded-2xl p-4 font-bold focus:border-blue-600 outline-none transition-all appearance-none cursor-pointer"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none cursor-pointer"
                         >
                           <option value="">Sélectionner</option>
                           {COLORS.map(type => <option key={type} value={type}>{type}</option>)}
@@ -551,128 +566,113 @@ export default function CreateListing() {
                   )}
 
                   {category === 'Vêtements' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-pink-50/50 rounded-[24px] border border-pink-100 mb-4 animate-in fade-in zoom-in duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-emerald-50/20 rounded-[24px] border border-emerald/10 mb-4 animate-in fade-in zoom-in duration-300">
                       <div>
-                        <label className="block text-xs font-black text-pink-500 uppercase tracking-widest mb-2 ml-1">Taille</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Taille</label>
                         <select 
                           value={String(details.size || '')} 
                           onChange={e => handleDetailChange('size', e.target.value)} 
-                          className="w-full bg-white border-2 border-pink-50 rounded-2xl p-4 font-bold focus:border-pink-600 outline-none transition-all appearance-none cursor-pointer"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none cursor-pointer"
                         >
                           <option value="">Sélectionner</option>
                           {CLOTHING_SIZES.map(type => <option key={type} value={type}>{type}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-pink-500 uppercase tracking-widest mb-2 ml-1">Marque</label>
-                        <input type="text" value={String(details.brand || '')} onChange={e => handleDetailChange('brand', e.target.value)} className="w-full bg-white border-2 border-pink-50 rounded-2xl p-4 font-bold focus:border-pink-600 outline-none transition-all" placeholder="Nike, Zara, Gucci..." />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Marque</label>
+                        <input type="text" value={String(details.brand || '')} onChange={e => handleDetailChange('brand', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Nike, Zara, Gucci..." />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-pink-500 uppercase tracking-widest mb-2 ml-1">Couleur</label>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Couleur</label>
                         <select 
                           value={String(details.color || '')} 
                           onChange={e => handleDetailChange('color', e.target.value)} 
-                          className="w-full bg-white border-2 border-pink-50 rounded-2xl p-4 font-bold focus:border-pink-600 outline-none transition-all appearance-none cursor-pointer"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none cursor-pointer"
                         >
                           <option value="">Sélectionner</option>
                           {COLORS.map(type => <option key={type} value={type}>{type}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-pink-500 uppercase tracking-widest mb-2 ml-1">Matière</label>
-                        <input type="text" value={String(details.material || '')} onChange={e => handleDetailChange('material', e.target.value)} className="w-full bg-white border-2 border-pink-50 rounded-2xl p-4 font-bold focus:border-pink-600 outline-none transition-all" placeholder="Coton, Lin, Cuir..." />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Matière</label>
+                        <input type="text" value={String(details.material || '')} onChange={e => handleDetailChange('material', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Coton, Lin, Cuir..." />
                       </div>
                     </div>
                   )}
 
                   {category === 'Mobilier' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-violet-50/50 rounded-[24px] border border-violet-100 mb-4 animate-in fade-in zoom-in duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-emerald-50/20 rounded-[24px] border border-emerald/10 mb-4 animate-in fade-in zoom-in duration-300">
                       <div>
-                        <label className="block text-xs font-black text-violet-500 uppercase tracking-widest mb-2 ml-1">Matière</label>
-                        <input type="text" value={String(details.material || '')} onChange={e => handleDetailChange('material', e.target.value)} className="w-full bg-white border-2 border-violet-50 rounded-2xl p-4 font-bold focus:border-violet-600 outline-none transition-all" placeholder="Bois, Métal, Velours..." />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Matière</label>
+                        <input type="text" value={String(details.material || '')} onChange={e => handleDetailChange('material', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Bois, Métal, Velours..." />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-violet-500 uppercase tracking-widest mb-2 ml-1">Dimensions</label>
-                        <input type="text" value={String(details.dimensions || '')} onChange={e => handleDetailChange('dimensions', e.target.value)} className="w-full bg-white border-2 border-violet-50 rounded-2xl p-4 font-bold focus:border-violet-600 outline-none transition-all" placeholder="120 x 80 x 45 cm" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-black text-violet-500 uppercase tracking-widest mb-2 ml-1">Style</label>
-                        <input type="text" value={String(details.style || '')} onChange={e => handleDetailChange('style', e.target.value)} className="w-full bg-white border-2 border-violet-50 rounded-2xl p-4 font-bold focus:border-violet-600 outline-none transition-all" placeholder="Vintage, Moderne, Industriel..." />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-black text-violet-500 uppercase tracking-widest mb-2 ml-1">Couleur</label>
-                        <select 
-                          value={String(details.color || '')} 
-                          onChange={e => handleDetailChange('color', e.target.value)} 
-                          className="w-full bg-white border-2 border-violet-50 rounded-2xl p-4 font-bold focus:border-violet-600 outline-none transition-all appearance-none cursor-pointer"
-                        >
-                          <option value="">Sélectionner</option>
-                          {COLORS.map(type => <option key={type} value={type}>{type}</option>)}
-                        </select>
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Dimensions</label>
+                        <input type="text" value={String(details.dimensions || '')} onChange={e => handleDetailChange('dimensions', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="120 x 80 x 45 cm" />
                       </div>
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Titre de l&apos;offre</label>
+                    <label className="block text-[10px] font-black text-forest-green/40 uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">Titre de l&apos;offre</label>
                     <input 
                       type="text" 
                       value={title} 
                       onChange={e => setTitle(e.target.value)} 
-                      className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 text-gray-900 font-bold focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all placeholder:text-gray-300" 
+                      className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 text-forest-green font-bold focus:border-emerald focus:ring-4 focus:ring-emerald/5 outline-none transition-all placeholder:text-slate-200" 
                       placeholder={category === 'Véhicules' ? "Ex: Peugeot 208 1.2 PureTech" : "Ex: Sac à dos vintage en cuir"} 
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">État</label>
+                      <label className="block text-[10px] font-black text-forest-green/40 uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">État</label>
                       <select 
                         value={condition} 
                         onChange={e => setCondition(e.target.value)}
-                        className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 text-gray-900 font-bold focus:border-indigo-600 outline-none transition-all appearance-none cursor-pointer"
+                        className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 text-forest-green font-bold focus:border-emerald outline-none transition-all appearance-none cursor-pointer"
                       >
                         <option value="" disabled>Sélectionner</option>
                         {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Prix (€)</label>
+                      <label className="block text-[10px] font-black text-forest-green/40 uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">Prix (€)</label>
                       <div className="relative">
                         <input 
                           type="number" 
                           value={price} 
                           onChange={e => setPrice(e.target.value)} 
-                          className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 text-gray-900 font-bold focus:border-indigo-600 outline-none transition-all pr-12"
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 text-forest-green font-bold focus:border-emerald outline-none transition-all pr-12"
                           placeholder="0.00"
                         />
-                        <Euro className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 w-5 h-5" />
+                        <Euro className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Description détaillée</label>
+                    <label className="block text-[10px] font-black text-forest-green/40 uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">Description détaillée</label>
                     <textarea 
                       rows={6} 
                       value={description} 
                       onChange={e => setDescription(e.target.value)} 
-                      className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 text-gray-900 focus:border-indigo-600 outline-none transition-all resize-none" 
+                      className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 text-forest-green focus:border-emerald outline-none transition-all resize-none" 
                       placeholder="Dites tout aux futurs acheteurs..."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Ville ou Code Postal</label>
+                    <label className="block text-[10px] font-black text-forest-green/40 uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">Ville ou Code Postal</label>
                     <div className="relative">
                       <input 
                         type="text" 
                         value={location} 
                         onChange={e => setLocation(e.target.value)} 
-                        className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 text-gray-900 font-bold focus:border-indigo-600 outline-none transition-all pl-12"
+                        className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 text-forest-green font-bold focus:border-emerald outline-none transition-all pl-12"
                         placeholder="Ex: Paris"
                       />
-                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400 w-5 h-5" />
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald w-5 h-5" />
                     </div>
                   </div>
                 </div>
@@ -681,18 +681,18 @@ export default function CreateListing() {
                   <button
                     onClick={handleSubmit}
                     disabled={!validateAll() || isSubmitting}
-                    className="w-full group relative flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-200 text-white font-black text-xl py-6 rounded-3xl shadow-2xl shadow-indigo-200 transition-all transform hover:-translate-y-1 active:scale-95 overflow-hidden"
+                    className="w-full group relative flex items-center justify-center gap-3 bg-emerald hover:bg-emerald-light disabled:opacity-30 disabled:grayscale text-white font-black text-xl py-6 rounded-3xl shadow-neon transition-all transform hover:-translate-y-1 active:scale-95 overflow-hidden font-[family-name:var(--font-outfit)]"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out"></div>
                     <Sparkles className="w-6 h-6" />
-                    {isSubmitting ? 'Envoi...' : 'Lancer la vente'}
+                    {isSubmitting ? 'Envoi...' : 'Lancer la vente d\'élite'}
                   </button>
                   {!validateAll() && (
-                    <div className="mt-4 p-4 bg-amber-50 rounded-2xl border border-amber-100 animate-pulse">
-                      <p className="text-center text-amber-700 font-bold text-xs uppercase tracking-widest mb-2">
-                        Champs requis manquants :
+                    <div className="mt-4 p-4 bg-emerald-50 rounded-2xl border border-emerald/10 animate-pulse">
+                      <p className="text-center text-forest-green font-black text-[9px] uppercase tracking-widest mb-2 font-[family-name:var(--font-outfit)]">
+                        CHAMPS REQUIS MANQUANTS
                       </p>
-                      <p className="text-center text-amber-600 text-[10px] font-medium italic">
+                      <p className="text-center text-emerald text-[10px] font-bold italic">
                         {getMissingFields().join(' • ')}
                       </p>
                     </div>
@@ -703,14 +703,14 @@ export default function CreateListing() {
 
             {/* SECTION 4: REMAINING SPECIFIC DETAILS (Non-Vehicles) */}
             {category && category !== 'Véhicules' && (
-              <div className="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-indigo-100/50 rounded-[32px] p-8 md:p-10 animate-in fade-in duration-500">
+              <div className="bg-white/80 backdrop-blur-xl border border-white shadow-2xl shadow-emerald-900/5 rounded-[32px] p-8 md:p-10 animate-in fade-in duration-500">
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 bg-violet-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-violet-200">
+                  <div className="w-12 h-12 bg-forest-green rounded-2xl flex items-center justify-center text-emerald-light shadow-lg shadow-emerald-900/20">
                     <Sparkles className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Spécifications</h2>
-                    <p className="text-gray-500 font-medium">Détails spécifiques pour votre {category}</p>
+                    <h2 className="text-2xl font-black text-forest-green font-[family-name:var(--font-playfair)] italic">Cure de Détails</h2>
+                    <p className="text-slate-500 font-medium text-sm">Spécificités pour votre {category}</p>
                   </div>
                 </div>
 
@@ -718,20 +718,20 @@ export default function CreateListing() {
                   {category === 'Immobilier' && (
                     <>
                       <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Type de bien</label>
-                        <input type="text" value={String(details.type || '')} onChange={e => handleDetailChange('type', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Maison, Appartement..." />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">Type de bien</label>
+                        <input type="text" value={String(details.type || '')} onChange={e => handleDetailChange('type', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Maison, Appartement..." />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Surface (m²)</label>
-                        <input type="number" value={details.surfaceArea as number || ''} onChange={e => handleDetailChange('surfaceArea', Number(e.target.value))} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 75" />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">Surface (m²)</label>
+                        <input type="number" value={details.surfaceArea as number || ''} onChange={e => handleDetailChange('surfaceArea', Number(e.target.value))} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Ex: 75" />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Pièces</label>
-                        <input type="number" value={details.rooms as number || ''} onChange={e => handleDetailChange('rooms', Number(e.target.value))} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Ex: 3" />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">Pièces</label>
+                        <input type="number" value={details.rooms as number || ''} onChange={e => handleDetailChange('rooms', Number(e.target.value))} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Ex: 3" />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">DPE</label>
-                        <input type="text" value={String(details.energyClass || '')} onChange={e => handleDetailChange('energyClass', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="A, B, C, D..." />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">DPE</label>
+                        <input type="text" value={String(details.energyClass || '')} onChange={e => handleDetailChange('energyClass', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="A, B, C, D..." />
                       </div>
                     </>
                   )}
@@ -739,12 +739,12 @@ export default function CreateListing() {
                   {(category === 'Mobilier' || category === 'Électronique') && (
                     <>
                       <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">{category === 'Mobilier' ? 'Matière' : 'Marque'}</label>
-                        <input type="text" value={String(details[category === 'Mobilier' ? 'material' : 'brand'] || '')} onChange={e => handleDetailChange(category === 'Mobilier' ? 'material' : 'brand', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Détail important..." />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">{category === 'Mobilier' ? 'Matière' : 'Marque'}</label>
+                        <input type="text" value={String(details[category === 'Mobilier' ? 'material' : 'brand'] || '')} onChange={e => handleDetailChange(category === 'Mobilier' ? 'material' : 'brand', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Détail important..." />
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">{category === 'Mobilier' ? 'Dimensions' : 'Modèle'}</label>
-                        <input type="text" value={String(details[category === 'Mobilier' ? 'dimensions' : 'model'] || '')} onChange={e => handleDetailChange(category === 'Mobilier' ? 'dimensions' : 'model', e.target.value)} className="w-full bg-white border-2 border-gray-50 rounded-2xl p-4 font-bold focus:border-indigo-600 outline-none transition-all" placeholder="Plus d'infos..." />
+                        <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-2 ml-1 font-[family-name:var(--font-outfit)]">{category === 'Mobilier' ? 'Dimensions' : 'Modèle'}</label>
+                        <input type="text" value={String(details[category === 'Mobilier' ? 'dimensions' : 'model'] || '')} onChange={e => handleDetailChange(category === 'Mobilier' ? 'dimensions' : 'model', e.target.value)} className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all" placeholder="Plus d'infos..." />
                       </div>
                     </>
                   )}
@@ -760,57 +760,57 @@ export default function CreateListing() {
               <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest">Aperçu en direct</h3>
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 rounded-full bg-red-400"></div>
-                  <div className="w-2 h-2 rounded-full bg-amber-400"></div>
-                  <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                  <div className="w-2 h-2 rounded-full bg-forest-green/40"></div>
+                  <div className="w-2 h-2 rounded-full bg-emerald/40"></div>
+                  <div className="w-2 h-2 rounded-full bg-emerald-light/40"></div>
                 </div>
               </div>
 
-              <div className="group relative bg-white rounded-[32px] overflow-hidden shadow-2xl shadow-indigo-200/50 border-4 border-white transition-all duration-500 hover:scale-[1.02]">
-                <div className="aspect-[4/5] bg-gray-50 relative overflow-hidden">
+              <div className="group relative bg-white rounded-[32px] overflow-hidden shadow-2xl shadow-emerald-900/5 border-4 border-white transition-all duration-500 hover:scale-[1.02]">
+                <div className="aspect-[4/5] bg-slate-50 relative overflow-hidden">
                   {images[0] ? (
                     <img src={images[0]} alt="Aperçu" className="w-full h-full object-cover transition-opacity duration-300" />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-300">
-                      <div className="w-20 h-20 bg-gray-100 rounded-[24px] flex items-center justify-center mb-4">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
+                      <div className="w-20 h-20 bg-slate-100 rounded-[24px] flex items-center justify-center mb-4">
                         <ImageIcon className="w-8 h-8" />
                       </div>
-                      <span className="font-black text-xs uppercase tracking-widest">Votre photo ici</span>
+                      <span className="font-black text-[10px] uppercase tracking-widest">Votre chef-d&apos;œuvre ici</span>
                     </div>
                   )}
                   {price && (
-                    <div className="absolute top-6 right-6 px-4 py-2 bg-indigo-600 text-white font-black rounded-2xl shadow-xl transform rotate-3">
+                    <div className="absolute top-6 right-6 px-5 py-2.5 bg-emerald text-white font-black rounded-2xl shadow-neon transform rotate-2">
                       {price} €
                     </div>
                   )}
                 </div>
                 <div className="p-8">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-wider rounded-lg">
+                    <span className="inline-block px-3 py-1 bg-emerald/10 text-emerald text-[9px] font-black uppercase tracking-wider rounded-lg">
                       {category || 'CATÉGORIE'}
                     </span>
                     {condition && (
-                      <span className="inline-block px-3 py-1 bg-gray-100 text-gray-500 text-[10px] font-black uppercase tracking-wider rounded-lg">
+                      <span className="inline-block px-3 py-1 bg-slate-100 text-slate-500 text-[9px] font-black uppercase tracking-wider rounded-lg">
                         {condition}
                       </span>
                     )}
                   </div>
-                  <h4 className="text-2xl font-black text-gray-900 leading-tight mb-2 truncate">
+                  <h4 className="text-2xl font-black text-forest-green leading-tight mb-2 truncate font-[family-name:var(--font-playfair)] italic">
                     {(category === 'Véhicules' && details.brand) ? `${details.brand} ${details.model || ''}` : (title || 'Titre de l\'annonce')}
                   </h4>
-                  <div className="flex items-center gap-2 text-gray-400">
-                    <MapPin className="w-4 h-4" />
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <MapPin className="w-4 h-4 text-emerald" />
                     <span className="text-sm font-bold truncate">{location || 'Localisation'}</span>
                   </div>
                 </div>
                 
                 {/* Decorative Elements */}
-                <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-indigo-50 rounded-full blur-2xl"></div>
+                <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-emerald-50 rounded-full blur-2xl"></div>
               </div>
               
-              <div className="mt-8 p-6 bg-indigo-50/50 rounded-3xl border border-indigo-100 border-dashed">
-                <p className="text-xs text-indigo-900/60 font-medium leading-relaxed">
-                  💡 **Astuce** : Décrivez l&apos;histoire de votre objet. Les acheteurs adorent savoir d&apos;où viennent les trésors qu&apos;ils achètent.
+              <div className="mt-8 p-6 bg-emerald-50/30 rounded-3xl border border-emerald/10 border-dashed">
+                <p className="text-xs text-forest-green/60 font-medium leading-relaxed italic">
+                  💡 **Secret d&apos;Élite** : Partagez l&apos;histoire de ce trésor. Les acheteurs de Way Market recherchent l&apos;authenticité au-delà de l&apos;objet.
                 </p>
               </div>
             </div>

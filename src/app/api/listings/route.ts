@@ -80,12 +80,18 @@ export async function GET(request: NextRequest) {
       db.listing.count({ where })
     ]);
     
-    const listings = records.map(l => ({
-      ...l,
-      images: JSON.parse(l.images),
-      details: l.details ? JSON.parse(l.details) : undefined,
-      createdAt: l.createdAt.toISOString()
-    }));
+    const listings = records.map(l => {
+      let images = [];
+      let details = {};
+      try { images = JSON.parse(l.images); } catch(e) { console.error('JSON Parse Error (Images):', l.id); }
+      try { details = l.details ? JSON.parse(l.details) : {}; } catch(e) { console.error('JSON Parse Error (Details):', l.id); }
+      return { 
+        ...l, 
+        images, 
+        details,
+        createdAt: l.createdAt.toISOString() 
+      };
+    });
 
     return NextResponse.json({
       listings,
@@ -126,11 +132,13 @@ export async function POST(request: Request) {
     const user = await db.user.findUnique({ where: { id: data.sellerId } });
     
     if (!user) {
-      console.error('CRITICAL: User not found in DB even though they are logged in via Clerk.');
-      return NextResponse.json({ 
-        error: 'Utilisateur non reconnu dans la base de données. Essayez de vous reconnecter.',
-        syncNeeded: true 
-      }, { status: 404 });
+      console.warn(`Listing creation attempt for non-existent user: ${data.sellerId}`);
+      return NextResponse.json({ error: 'Utilisateur introuvable.' }, { status: 404 });
+    }
+
+    if ((user as any).isBanned) {
+      console.warn(`Banned user attempt: ${data.sellerId}`);
+      return NextResponse.json({ error: 'Votre compte a été suspendu par un administrateur.' }, { status: 403 });
     }
 
     console.log('User found. Pro Status:', (user as any).isPro);
