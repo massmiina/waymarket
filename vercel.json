@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/admin/sync-cars",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}

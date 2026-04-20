@@ -105,3 +105,31 @@ model Message {
   sender         User         @relation("MessagesSent", fields: [senderId], references: [id], onDelete: Cascade)
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }
+
+model CarMake {
+  id     String     @id @default(uuid())
+  name   String     @unique
+  slug   String     @unique
+  models CarModel[]
+}
+
+model CarModel {
+  id        String       @id @default(uuid())
+  name      String
+  slug      String
+  makeId    String
+  make      CarMake      @relation(fields: [makeId], references: [id], onDelete: Cascade)
+  variants  CarVariant[]
+  
+  @@unique([name, makeId])
+}
+
+model CarVariant {
+  id        String   @id @default(uuid())
+  modelId   String
+  year      Int
+  trim      String?
+  engine    String?
+  fuelType  String?
+  model     CarModel @relation(fields: [modelId], references: [id], onDelete: Cascade)
+}

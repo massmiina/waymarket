@@ -14,6 +14,45 @@ export default function RecherchePage() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [maxPrice, setMaxPrice] = useState('');
 
+  // Car Filters
+  const [makes, setMakes] = useState<any[]>([]);
+  const [models, setModels] = useState<any[]>([]);
+  const [selectedBrandId, setSelectedBrandId] = useState('');
+  const [selectedBrandName, setSelectedBrandName] = useState('');
+  const [selectedModel, setSelectedModel] = useState('');
+
+  // Fetch makes on mount
+  React.useEffect(() => {
+    const fetchMakes = async () => {
+      try {
+        const res = await fetch('/api/cars/makes');
+        const data = await res.json();
+        if (Array.isArray(data)) setMakes(data);
+      } catch (error) {
+        console.error('Error fetching makes:', error);
+      }
+    };
+    fetchMakes();
+  }, []);
+
+  // Fetch models on brand select
+  React.useEffect(() => {
+    if (selectedBrandId) {
+      const fetchModels = async () => {
+        try {
+          const res = await fetch(`/api/cars/models?makeId=${selectedBrandId}`);
+          const data = await res.json();
+          if (Array.isArray(data)) setModels(data);
+        } catch (error) {
+          console.error('Error fetching models:', error);
+        }
+      };
+      fetchModels();
+    } else {
+      setModels([]);
+    }
+  }, [selectedBrandId]);
+
   const filteredListings = listings.filter(listing => {
     const matchesSearch = listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          listing.category.toLowerCase().includes(searchQuery.toLowerCase());
@@ -21,7 +60,21 @@ export default function RecherchePage() {
     const matchesCategory = activeCategory === 'Toutes' || listing.category === activeCategory;
     const matchesPrice = !maxPrice || listing.price <= parseInt(maxPrice);
     
-    return matchesSearch && matchesLocation && matchesCategory && matchesPrice;
+    // Car Specific Filters
+    let matchesCarBrand = true;
+    let matchesCarModel = true;
+
+    if (activeCategory === 'Véhicules' && (selectedBrandName || selectedModel)) {
+      try {
+        const details = listing.details ? JSON.parse(listing.details) : {};
+        if (selectedBrandName && details.brand !== selectedBrandName) matchesCarBrand = false;
+        if (selectedModel && details.model !== selectedModel) matchesCarModel = false;
+      } catch (e) {
+        matchesCarBrand = false;
+      }
+    }
+    
+    return matchesSearch && matchesLocation && matchesCategory && matchesPrice && matchesCarBrand && matchesCarModel;
   });
 
   return (
@@ -102,20 +155,60 @@ export default function RecherchePage() {
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 py-16">
         {isFiltersOpen && (
           <div className="bg-background border-t border-b border-slate-50 py-12 px-4 mb-20 animate-in fade-in slide-in-from-top-4 duration-500">
-             <div className="max-w-xl mx-auto">
-                <label className="text-[10px] font-black uppercase tracking-widest text-forest-green/50 mb-2 block">Budget Max</label>
-                <div className="relative group">
-                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-forest-green/20 group-focus-within:text-emerald">
-                      <Euro className="h-4 w-4" />
-                   </div>
-                   <input
-                    type="number"
-                    placeholder="0"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-emerald bg-background font-bold transition-all focus:outline-none placeholder:text-forest-green/10 text-forest-green"
-                  />
+             <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-forest-green/50 mb-2 block">Budget Max</label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-forest-green/20 group-focus-within:text-emerald">
+                        <Euro className="h-4 w-4" />
+                    </div>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                      className="block w-full pl-12 pr-6 py-4 border-2 border-slate-50 rounded-2xl focus:border-emerald bg-background font-bold transition-all focus:outline-none placeholder:text-forest-green/10 text-forest-green"
+                    />
+                  </div>
                 </div>
+
+                {activeCategory === 'Véhicules' && (
+                  <>
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-forest-green/50 mb-2 block">Marque</label>
+                      <select 
+                        value={selectedBrandId} 
+                        onChange={(e) => {
+                          const id = e.target.value;
+                          setSelectedBrandId(id);
+                          setSelectedBrandName(makes.find(m => m.id === id)?.name || '');
+                          setSelectedModel('');
+                        }}
+                        className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none text-forest-green"
+                      >
+                        <option value="">Toutes les marques</option>
+                        {makes.map(make => (
+                          <option key={make.id} value={make.id}>{make.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-forest-green/50 mb-2 block">Modèle</label>
+                      <select 
+                        value={selectedModel} 
+                        onChange={(e) => setSelectedModel(e.target.value)}
+                        disabled={!selectedBrandId}
+                        className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none disabled:bg-slate-50 disabled:text-slate-300 text-forest-green"
+                      >
+                        <option value="">Tous les modèles</option>
+                        {models.map(model => (
+                          <option key={model.id} value={model.name}>{model.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
+                )}
              </div>
           </div>
         )}

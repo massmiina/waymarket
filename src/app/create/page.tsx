@@ -63,6 +63,13 @@ export default function CreateListing() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // Dynamic Car Data
+  const [makes, setMakes] = useState<any[]>([]);
+  const [models, setModels] = useState<any[]>([]);
+  const [loadingMakes, setLoadingMakes] = useState(false);
+  const [loadingModels, setLoadingModels] = useState(false);
+  const [selectedMakeId, setSelectedMakeId] = useState('');
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { startUpload } = useUploadThing("imageUploader", {
@@ -112,6 +119,46 @@ export default function CreateListing() {
   const handleDetailChange = (key: string, value: string | number | boolean) => {
     setDetails(prev => ({ ...prev, [key]: value }));
   };
+
+  // Fetch makes on category select
+  useEffect(() => {
+    if (category === 'Véhicules') {
+      const fetchMakes = async () => {
+        setLoadingMakes(true);
+        try {
+          const res = await fetch('/api/cars/makes');
+          const data = await res.json();
+          if (Array.isArray(data)) setMakes(data);
+        } catch (error) {
+          console.error('Error fetching makes:', error);
+        } finally {
+          setLoadingMakes(false);
+        }
+      };
+      fetchMakes();
+    }
+  }, [category]);
+
+  // Fetch models on make select
+  useEffect(() => {
+    if (selectedMakeId) {
+      const fetchModels = async () => {
+        setLoadingModels(true);
+        try {
+          const res = await fetch(`/api/cars/models?makeId=${selectedMakeId}`);
+          const data = await res.json();
+          if (Array.isArray(data)) setModels(data);
+        } catch (error) {
+          console.error('Error fetching models:', error);
+        } finally {
+          setLoadingModels(false);
+        }
+      };
+      fetchModels();
+    } else {
+      setModels([]);
+    }
+  }, [selectedMakeId]);
 
   const getMissingFields = () => {
     const missing: string[] = [];
@@ -235,7 +282,6 @@ export default function CreateListing() {
   }
 
   const maxPhotos = currentUser?.isPro ? 10 : 3;
-  const photoSlots = Array.from({ length: maxPhotos });
 
   return (
     <div className="min-h-screen bg-background">
@@ -323,62 +369,46 @@ export default function CreateListing() {
                 <div className="space-y-6">
                   {/* Photo Gallery Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    {photoSlots.map((_, i) => {
-                      const imageUrl = images[i];
-                      const isFirst = i === 0;
-                      
-                      if (imageUrl) {
-                        return (
-                          <div key={i} className={`relative aspect-square rounded-2xl overflow-hidden group shadow-md border-2 border-white transition-all hover:scale-[1.02] ${isFirst ? 'md:col-span-2 md:row-span-2 ring-4 ring-emerald/10' : ''}`}>
-                            <img src={imageUrl} alt={`Photo ${i+1}`} className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <button 
-                                onClick={() => setImages(prev => prev.filter((_, idx) => idx !== i))}
-                                className="bg-white/90 backdrop-blur-md p-2 rounded-xl text-red-500 shadow-lg hover:bg-red-500 hover:text-white transition-all transform hover:rotate-90"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                            {isFirst && (
-                              <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 bg-emerald text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg">
-                                Principale
-                              </div>
-                            )}
-                          </div>
-                        );
-                      }
-
-                      // Only show the next available slot as a button
-                      if (i === images.length) {
-                        return (
-                          <button
-                            key={i}
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={isUploading}
-                            className={`aspect-square rounded-2xl border-2 border-dashed border-emerald/20 bg-emerald/5 flex flex-col items-center justify-center text-emerald gap-2 transition-all hover:bg-emerald/10 hover:border-emerald/40 group ${isFirst ? 'md:col-span-2 md:row-span-2 ring-4 ring-emerald/5' : ''}`}
+                    {images.map((imageUrl, i) => (
+                      <div key={i} className={`relative aspect-square rounded-2xl overflow-hidden group shadow-md border-2 border-white transition-all hover:scale-[1.02] ${i === 0 ? 'md:col-span-2 md:row-span-2 ring-4 ring-emerald/10' : ''}`}>
+                        <img src={imageUrl} alt={`Photo ${i+1}`} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button 
+                            onClick={() => setImages(prev => prev.filter((_, idx) => idx !== i))}
+                            className="bg-white/90 backdrop-blur-md p-2 rounded-xl text-red-500 shadow-lg hover:bg-red-500 hover:text-white transition-all transform hover:rotate-90"
                           >
-                            {isUploading ? (
-                              <div className="flex flex-col items-center gap-2">
-                                <div className="w-8 h-8 border-4 border-emerald border-t-transparent rounded-full animate-spin"></div>
-                                <span className="text-[10px] font-black uppercase tracking-widest">{uploadProgress}%</span>
-                              </div>
-                            ) : (
-                              <>
-                                <div className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center group-hover:scale-110 transition-transform">
-                                  <UploadCloud className="w-6 h-6" />
-                                </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest font-[family-name:var(--font-outfit)]">Ajouter</span>
-                              </>
-                            )}
+                            <X className="w-4 h-4" />
                           </button>
-                        );
-                      }
+                        </div>
+                        {i === 0 && (
+                          <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 bg-emerald text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg">
+                            Principale
+                          </div>
+                        )}
+                      </div>
+                    ))}
 
-                      // Placeholder slots
-                      return (
-                        <div key={i} className="aspect-square rounded-2xl border-2 border-gray-100 bg-gray-50/50"></div>
-                      );
-                    })}
+                    {images.length < maxPhotos && (
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                        className={`aspect-square rounded-2xl border-2 border-dashed border-emerald/20 bg-emerald/5 flex flex-col items-center justify-center text-emerald gap-2 transition-all hover:bg-emerald/10 hover:border-emerald/40 group ${images.length === 0 ? 'md:col-span-2 md:row-span-2 ring-4 ring-emerald/5' : ''}`}
+                      >
+                        {isUploading ? (
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-8 h-8 border-4 border-emerald border-t-transparent rounded-full animate-spin"></div>
+                            <span className="text-[10px] font-black uppercase tracking-widest">{uploadProgress}%</span>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center group-hover:scale-110 transition-transform">
+                              <UploadCloud className="w-6 h-6" />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest font-[family-name:var(--font-outfit)]">Ajouter</span>
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -403,29 +433,66 @@ export default function CreateListing() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-emerald-50/20 rounded-[24px] border border-emerald/10 mb-4 animate-in fade-in zoom-in duration-300">
                       <div>
                         <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Marque</label>
-                        <select 
-                          value={String(details.brand || '')} 
-                          onChange={e => {
-                            handleDetailChange('brand', e.target.value);
-                            handleDetailChange('model', ''); // Reset model on brand change
-                          }} 
-                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none"
-                        >
-                          <option value="">Sélectionner une marque</option>
-                          {Object.keys(CAR_DATA).sort().map(brand => <option key={brand} value={brand}>{brand}</option>)}
-                        </select>
+                        {selectedMakeId === 'other' ? (
+                          <div className="relative">
+                            <input 
+                              type="text"
+                              value={String(details.brand || '')}
+                              onChange={e => handleDetailChange('brand', e.target.value)}
+                              className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all"
+                              placeholder="Saisissez la marque"
+                            />
+                            <button 
+                              onClick={() => {
+                                setSelectedMakeId('');
+                                handleDetailChange('brand', '');
+                              }}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-emerald uppercase tracking-widest hover:underline"
+                            >
+                              Retour
+                            </button>
+                          </div>
+                        ) : (
+                          <select 
+                            value={selectedMakeId} 
+                            onChange={e => {
+                              const makeId = e.target.value;
+                              const makeName = makes.find(m => m.id === makeId)?.name || '';
+                              setSelectedMakeId(makeId);
+                              handleDetailChange('brand', makeName);
+                              handleDetailChange('model', ''); // Reset model name
+                            }} 
+                            className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none"
+                          >
+                            <option value="">{loadingMakes ? 'Chargement...' : 'Sélectionner une marque'}</option>
+                            {makes.map(make => <option key={make.id} value={make.id}>{make.name}</option>)}
+                            {!loadingMakes && <option value="other">Autre / Manuelle</option>}
+                          </select>
+                        )}
                       </div>
                       <div>
                         <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Modèle</label>
-                        <select 
-                          value={String(details.model || '')} 
-                          onChange={e => handleDetailChange('model', e.target.value)} 
-                          disabled={!details.brand}
-                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none disabled:bg-gray-50 disabled:text-gray-400"
-                        >
-                          <option value="">{details.brand ? 'Sélectionner un modèle' : 'Choisissez d\'abord la marque'}</option>
-                          {details.brand && CAR_DATA[String(details.brand)]?.map(model => <option key={model} value={model}>{model}</option>)}
-                        </select>
+                        {selectedMakeId === 'other' ? (
+                          <input 
+                            type="text"
+                            value={String(details.model || '')}
+                            onChange={e => handleDetailChange('model', e.target.value)}
+                            className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all"
+                            placeholder="Saisissez le modèle"
+                          />
+                        ) : (
+                          <select 
+                            value={String(details.model || '')} 
+                            onChange={e => handleDetailChange('model', e.target.value)} 
+                            disabled={!selectedMakeId || loadingModels}
+                            className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none disabled:bg-gray-50 disabled:text-gray-400"
+                          >
+                            <option value="">
+                              {loadingModels ? 'Chargement...' : (!selectedMakeId ? 'Choisissez d\'abord la marque' : 'Sélectionner un modèle')}
+                            </option>
+                            {models.map(model => <option key={model.id} value={model.name}>{model.name}</option>)}
+                          </select>
+                        )}
                       </div>
                       <div>
                         <label className="block text-[10px] font-black text-emerald uppercase tracking-widest mb-1.5 ml-1">Kilométrage</label>
