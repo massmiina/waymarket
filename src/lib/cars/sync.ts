@@ -105,18 +105,18 @@ export async function syncCarData() {
 
     // 3. Fetch additional makes from NHTSA to ensure diversity
     console.log("📡 Fetching additional makes from NHTSA...");
-    const makesResponse = await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json');
-    const makesData = await makesResponse.json();
+    const additionalMakesResponse = await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json');
+    const additionalMakesData = await additionalMakesResponse.json();
     
-    if (makesData.Results && Array.isArray(makesData.Results)) {
-      const allMakes = makesData.Results;
-      const processedSlugs = new Set<string>(Object.keys(CAR_DATA).map(slugify));
+    if (additionalMakesData.Results && Array.isArray(additionalMakesData.Results)) {
+      const additionalMakes = additionalMakesData.Results;
+      const additionalProcessedSlugs = new Set<string>(Object.keys(CAR_DATA).map(slugify));
 
-      for (const makeData of allMakes) {
+      for (const makeData of additionalMakes) {
         const brandName = makeData.MakeName.trim();
         if (!brandName) continue;
         const slug = slugify(brandName);
-        if (processedSlugs.has(slug)) continue;
+        if (additionalProcessedSlugs.has(slug)) continue;
 
         try {
           await db.carMake.upsert({
@@ -124,7 +124,7 @@ export async function syncCarData() {
             update: {},
             create: { name: brandName, slug: slug }
           });
-          processedSlugs.add(slug);
+          additionalProcessedSlugs.add(slug);
           brandsCount++;
         } catch (err) { continue; }
       }
