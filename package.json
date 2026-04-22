@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync-cars": "tsx src/scripts/seed-cars.ts"
   },
   "dependencies": {
     "@clerk/localizations": "^4.4.1",

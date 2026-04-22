@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useMarket } from '@/contexts/MarketContext';
 import ListingCard from '@/components/ListingCard';
 import CategoryBlocks from '@/components/CategoryBlocks';
-import { Search, MapPin, SlidersHorizontal, Euro, Car, Crown } from 'lucide-react';
+import { Search, MapPin, SlidersHorizontal, Euro, Car, Crown, XCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function RecherchePage() {
@@ -20,6 +20,8 @@ export default function RecherchePage() {
   const [selectedBrandId, setSelectedBrandId] = useState('');
   const [selectedBrandName, setSelectedBrandName] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
+  const [manualBrand, setManualBrand] = useState('');
+  const [manualModel, setManualModel] = useState('');
 
   // Fetch makes on mount
   React.useEffect(() => {
@@ -64,14 +66,13 @@ export default function RecherchePage() {
     let matchesCarBrand = true;
     let matchesCarModel = true;
 
-    if (activeCategory === 'Véhicules' && (selectedBrandName || selectedModel)) {
-      try {
-        const details = listing.details ? JSON.parse(listing.details) : {};
-        if (selectedBrandName && details.brand !== selectedBrandName) matchesCarBrand = false;
-        if (selectedModel && details.model !== selectedModel) matchesCarModel = false;
-      } catch (e) {
-        matchesCarBrand = false;
-      }
+    if (activeCategory === 'Véhicules' && listing.category === 'Véhicules' && (selectedBrandName || selectedModel || manualBrand || manualModel)) {
+      const details = listing.details;
+      const brandToMatch = selectedBrandId === 'other' ? manualBrand : selectedBrandName;
+      const modelToMatch = selectedModel === 'other' ? manualModel : selectedModel;
+
+      if (brandToMatch && !details?.brand?.toLowerCase().includes(brandToMatch.toLowerCase())) matchesCarBrand = false;
+      if (modelToMatch && !details?.model?.toLowerCase().includes(modelToMatch.toLowerCase())) matchesCarModel = false;
     }
     
     return matchesSearch && matchesLocation && matchesCategory && matchesPrice && matchesCarBrand && matchesCarModel;
@@ -176,39 +177,83 @@ export default function RecherchePage() {
                   <>
                     <div>
                       <label className="text-[10px] font-black uppercase tracking-widest text-forest-green/50 mb-2 block">Marque</label>
-                      <select 
-                        value={selectedBrandId} 
-                        onChange={(e) => {
-                          const id = e.target.value;
-                          setSelectedBrandId(id);
-                          setSelectedBrandName(makes.find(m => m.id === id)?.name || '');
-                          setSelectedModel('');
-                        }}
-                        className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none text-forest-green"
-                      >
-                        <option value="">Toutes les marques</option>
-                        {makes.map(make => (
-                          <option key={make.id} value={make.id}>{make.name}</option>
-                        ))}
-                      </select>
+                      <div className="space-y-2">
+                        <select 
+                          value={selectedBrandId} 
+                          onChange={(e) => {
+                            const id = e.target.value;
+                            setSelectedBrandId(id);
+                            setSelectedBrandName(makes.find(m => m.id === id)?.name || '');
+                            setSelectedModel('');
+                            if (id !== 'other') setManualBrand('');
+                          }}
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none text-forest-green"
+                        >
+                          <option value="">Toutes les marques</option>
+                          {makes.map(make => (
+                            <option key={make.id} value={make.id}>{make.name}</option>
+                          ))}
+                          <option value="other">Autre / Saisie manuelle</option>
+                        </select>
+                        {selectedBrandId === 'other' && (
+                          <input 
+                            type="text"
+                            placeholder="Tapez la marque..."
+                            value={manualBrand}
+                            onChange={(e) => setManualBrand(e.target.value)}
+                            className="w-full bg-white border-2 border-emerald/30 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all text-forest-green animate-in fade-in slide-in-from-top-2"
+                          />
+                        )}
+                      </div>
                     </div>
 
                     <div>
                       <label className="text-[10px] font-black uppercase tracking-widest text-forest-green/50 mb-2 block">Modèle</label>
-                      <select 
-                        value={selectedModel} 
-                        onChange={(e) => setSelectedModel(e.target.value)}
-                        disabled={!selectedBrandId}
-                        className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none disabled:bg-slate-50 disabled:text-slate-300 text-forest-green"
-                      >
-                        <option value="">Tous les modèles</option>
-                        {models.map(model => (
-                          <option key={model.id} value={model.name}>{model.name}</option>
-                        ))}
-                      </select>
+                      <div className="space-y-2">
+                        <select 
+                          value={selectedModel} 
+                          onChange={(e) => {
+                            setSelectedModel(e.target.value);
+                            if (e.target.value !== 'other') setManualModel('');
+                          }}
+                          disabled={!selectedBrandId}
+                          className="w-full bg-white border-2 border-slate-50 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all appearance-none disabled:bg-slate-50 disabled:text-slate-300 text-forest-green"
+                        >
+                          <option value="">Tous les modèles</option>
+                          {models.map(model => (
+                            <option key={model.id} value={model.name}>{model.name}</option>
+                          ))}
+                          {selectedBrandId && <option value="other">Autre / Saisie manuelle</option>}
+                        </select>
+                        {selectedModel === 'other' && (
+                          <input 
+                            type="text"
+                            placeholder="Tapez le modèle..."
+                            value={manualModel}
+                            onChange={(e) => setManualModel(e.target.value)}
+                            className="w-full bg-white border-2 border-emerald/30 rounded-2xl p-4 font-bold focus:border-emerald outline-none transition-all text-forest-green animate-in fade-in slide-in-from-top-2"
+                          />
+                        )}
+                      </div>
                     </div>
                   </>
                 )}
+                <div className="md:col-span-2 flex justify-end mt-4">
+                   <button 
+                     onClick={() => {
+                       setMaxPrice('');
+                       setSelectedBrandId('');
+                       setSelectedBrandName('');
+                       setSelectedModel('');
+                       setManualBrand('');
+                       setManualModel('');
+                     }}
+                     className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors flex items-center gap-2"
+                   >
+                     <XCircle className="w-3.5 h-3.5" />
+                     Réinitialiser les filtres
+                   </button>
+                </div>
              </div>
           </div>
         )}
