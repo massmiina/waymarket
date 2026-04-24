@@ -31,13 +31,13 @@ export default function MessagesListPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans">
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full flex-grow">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16 w-full flex-grow">
         
         {/* Header Area */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-black text-forest-green tracking-tighter leading-none font-[family-name:var(--font-playfair)] italic">Messagerie</h1>
-            <p className="text-[10px] font-black text-emerald/40 uppercase tracking-[0.2em]">Vos discussions en cours</p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-8 md:mb-12">
+          <div className="space-y-1">
+            <h1 className="text-3xl sm:text-4xl font-black text-forest-green tracking-tighter leading-none font-[family-name:var(--font-playfair)] italic">Messagerie</h1>
+            <p className="text-[9px] sm:text-[10px] font-black text-emerald/40 uppercase tracking-[0.2em]">Vos discussions en cours</p>
           </div>
           <div className="px-5 py-2.5 bg-white rounded-2xl border border-slate-100 shadow-sm text-[10px] font-black uppercase tracking-widest text-emerald flex items-center gap-2">
             <Sparkles className="h-3.5 w-3.5" />
@@ -117,12 +117,12 @@ export default function MessagesListPage() {
               );
             })
           ) : (
-            <div className="py-24 text-center bg-white rounded-[44px] shadow-2xl shadow-emerald/5 border border-white">
-              <div className="w-24 h-24 bg-emerald/5 rounded-[32px] flex items-center justify-center mx-auto mb-8">
-                <MessageCircle className="h-10 w-10 text-emerald/20" />
+            <div className="py-12 sm:py-24 text-center bg-white rounded-[44px] shadow-2xl shadow-emerald/5 border border-white">
+              <div className="w-16 h-16 sm:w-24 sm:h-24 bg-emerald/5 rounded-[28px] sm:rounded-[32px] flex items-center justify-center mx-auto mb-6 sm:mb-8">
+                <MessageCircle className="h-6 w-6 sm:h-10 sm:h-10 text-emerald/20" />
               </div>
-              <h3 className="text-2xl font-black text-forest-green tracking-tight mb-3 font-[family-name:var(--font-playfair)] italic">Le calme plat...</h3>
-              <p className="text-forest-green/40 font-medium mb-10 max-w-xs mx-auto text-sm leading-relaxed">
+              <h3 className="text-xl sm:text-2xl font-black text-forest-green tracking-tight mb-2 sm:mb-3 font-[family-name:var(--font-playfair)] italic">Le calme plat...</h3>
+              <p className="text-forest-green/40 font-medium mb-8 sm:mb-10 max-w-[240px] sm:max-w-xs mx-auto text-xs sm:text-sm leading-relaxed">
                 C&apos;est ici que vous pourrez discuter avec vos acheteurs et vendeurs.
               </p>
               <Link 

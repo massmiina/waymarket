@@ -5,151 +5,173 @@ import Link from 'next/link';
 import { 
   Home, 
   Heart, 
-  PlusCircle, 
+  Plus, 
   Settings, 
   MessageSquare,
   Package,
   Shield,
   Zap,
-  User as UserIcon
+  User as UserIcon,
+  X,
+  Search,
+  Bell,
+  ArrowRight
 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useMarket } from '@/contexts/MarketContext';
+import { useRouter } from 'next/navigation';
 
 export default function MenuPage() {
   const { user: clerkUser } = useUser();
   const { currentUser } = useMarket();
+  const router = useRouter();
 
-  const MenuCard = ({ href, icon: Icon, label, description, color }: any) => (
+  const MenuCard = ({ href, icon: Icon, label, description, badge }: any) => (
     <Link 
       href={href} 
-      className="group relative overflow-hidden bg-white p-3 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-50 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 active:scale-[0.98] flex flex-col items-center text-center sm:items-start sm:text-left"
+      className="group relative overflow-hidden bg-white/60 backdrop-blur-md p-5 rounded-[2.5rem] border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.05)] hover:shadow-2xl hover:shadow-emerald/10 transition-all duration-500 hover:-translate-y-1 active:scale-[0.98] flex items-center gap-5"
     >
-      <div className={`absolute top-0 right-0 w-16 h-16 -mr-4 -mt-4 rounded-full opacity-5 blur-xl transition-all group-hover:opacity-10 ${color}`}></div>
-      <div className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl ${color} bg-opacity-10 group-hover:scale-110 transition-transform duration-300 mb-2 sm:mb-0`}>
-        <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+      <div className="relative shrink-0">
+        <div className="p-4 rounded-2xl bg-emerald text-white shadow-[0_10px_20px_-5px_rgba(16,185,129,0.4)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+          <Icon className="w-6 h-6 stroke-[2.5px]" />
+        </div>
+        <div className="absolute inset-0 bg-emerald blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
       </div>
-      <div className="flex-1 min-w-0 w-full">
-        <h3 className="text-sm sm:text-lg font-bold text-forest-green mb-0.5 line-clamp-1">{label}</h3>
-        <p className="text-[10px] sm:text-sm text-forest-green/40 line-clamp-1 hidden sm:block">{description}</p>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <h3 className="text-base font-bold text-forest-green tracking-tight">{label}</h3>
+          {badge && (
+            <span className="px-2 py-0.5 bg-emerald text-white text-[8px] font-black rounded-full uppercase tracking-widest animate-pulse">{badge}</span>
+          )}
+        </div>
+        <p className="text-xs text-forest-green/40 mt-0.5 font-medium">{description}</p>
       </div>
+      <ArrowRight className="w-4 h-4 text-forest-green/10 group-hover:text-emerald group-hover:translate-x-1 transition-all" />
     </Link>
   );
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[40%] bg-emerald/5 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[40%] bg-forest-green/5 rounded-full blur-[120px] pointer-events-none"></div>
       
-      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-6 sm:py-12">
+      {/* Header with Close Button */}
+      <header className="relative z-10 flex justify-between items-center px-6 py-6 sm:px-12 sm:py-10">
+        <div className="flex flex-col">
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-1">Way Market</span>
+          <h2 className="text-2xl font-[family-name:var(--font-playfair)] italic font-bold text-forest-green">Menu</h2>
+        </div>
+        <button 
+          onClick={() => router.back()}
+          className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-50 text-forest-green hover:scale-110 active:scale-90 transition-all"
+        >
+          <X className="w-5 h-5 stroke-[2.5px]" />
+        </button>
+      </header>
+
+      <main className="relative z-10 flex-1 w-full max-w-2xl mx-auto px-6 pb-20">
         
-        {/* Profile Section */}
-        <div className="relative overflow-hidden bg-white px-6 py-8 sm:px-8 sm:py-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border border-gray-100 mb-6 sm:mb-10 group">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
+        {/* Profile Card - Ultra Premium */}
+        <div className="relative overflow-hidden bg-forest-green px-8 py-10 rounded-[2.5rem] shadow-2xl shadow-forest-green/20 mb-10 group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald/10 rounded-full -mr-32 -mt-32 blur-3xl opacity-50"></div>
           
-          <div className="relative flex items-center gap-4 sm:gap-8">
+          <div className="relative flex items-center gap-6">
             <div className="relative shrink-0">
-              <div className="w-16 h-16 sm:w-24 sm:h-24 bg-emerald rounded-full flex items-center justify-center text-white text-xl sm:text-3xl font-black border-4 border-white shadow-inner overflow-hidden">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center text-white text-3xl font-black border-2 border-white/20 shadow-xl overflow-hidden">
                 {clerkUser?.imageUrl ? (
                   <img src={clerkUser.imageUrl} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  clerkUser?.firstName?.charAt(0) || '?'
+                  clerkUser?.firstName?.charAt(0) || <UserIcon className="w-10 h-10" />
                 )}
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 bg-green-500 w-4 h-4 sm:w-6 sm:h-6 rounded-full border-[3px] sm:border-4 border-white shadow-sm"></div>
+              <div className="absolute -bottom-1 -right-1 bg-emerald w-6 h-6 rounded-full border-4 border-forest-green shadow-sm flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              </div>
             </div>
             
-            <div className="flex-1 min-w-0 text-left">
-              <h1 className="text-xl sm:text-3xl font-black text-forest-green tracking-tight line-clamp-1 font-[family-name:var(--font-playfair)] italic">
-                {clerkUser ? `Bonjour, ${clerkUser.firstName}` : 'Bienvenue'}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl font-black text-white tracking-tight font-[family-name:var(--font-playfair)] italic">
+                {clerkUser ? `${clerkUser.firstName} ${clerkUser.lastName || ''}` : 'Bienvenue'}
               </h1>
-              <p className="text-[10px] text-emerald/40 font-black uppercase tracking-[0.2em] line-clamp-1 mb-3 sm:mb-6">
-                {clerkUser ? clerkUser.primaryEmailAddress?.emailAddress : 'Way Market Elite'}
+              <p className="text-[9px] text-emerald font-black uppercase tracking-[0.3em] mt-1 mb-4 opacity-80">
+                {clerkUser ? clerkUser.primaryEmailAddress?.emailAddress : 'Way Market Elite Access'}
               </p>
               
               {!clerkUser ? (
-                <Link href="/auth" className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald text-white font-bold rounded-xl text-sm hover:bg-emerald-hover shadow-neon hover:shadow-neon-hover transition transform active:scale-95">
-                  Se connecter
+                <Link href="/auth" className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald text-white font-bold rounded-xl text-sm hover:scale-105 transition-transform shadow-lg shadow-emerald/20">
+                  S'identifier
                 </Link>
               ) : (
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald/5 text-emerald text-[9px] font-black rounded-full uppercase tracking-wider border border-emerald/10">
-                    <Shield className="w-3 h-3" />
-                    Elite
-                  </span>
-                  {currentUser?.isPro && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald/10 text-emerald text-[9px] font-black rounded-full uppercase tracking-wider">
-                      <Zap className="w-3 h-3" />
-                      Pro
-                    </span>
-                  )}
+                <div className="flex items-center gap-3">
+                   <Link href="/compte" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white transition">Gérer mon profil</Link>
+                   <span className="w-1 h-1 bg-white/20 rounded-full"></span>
+                   <Link href="/pro" className="text-[10px] font-black uppercase tracking-widest text-emerald hover:text-emerald-light transition">Passer Pro</Link>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Hub Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-3 sm:gap-4">
+        {/* Menu Sections */}
+        <div className="space-y-10">
           
-          <div className="col-span-2 sm:col-span-1 space-y-3 sm:space-y-4">
-            <h2 className="text-[10px] sm:text-sm font-black text-forest-green/30 uppercase tracking-[0.2em] ml-2 pt-2">Navigation</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-1 gap-3 sm:gap-4">
+          <section>
+            <h2 className="text-[10px] font-black text-forest-green/20 uppercase tracking-[0.5em] mb-6 ml-4">Découvrir</h2>
+            <div className="grid gap-4">
               <MenuCard 
                 href="/" 
                 icon={Home} 
                 label="Accueil" 
-                description="Retourner à la page principale"
-                color="bg-forest-green text-emerald"
+                description="Explorez les dernières annonces d'élite"
               />
               <MenuCard 
-                href="/favorites" 
+                href="/recherche" 
+                icon={Search} 
+                label="Recherche Avancée" 
+                description="Filtres précis, immobilier, véhicules"
+              />
+              <MenuCard 
+                href="/favoris" 
                 icon={Heart} 
-                label="Favoris" 
-                description="Retrouvez vos coups de cœur"
-                color="bg-emerald text-emerald-600"
+                label="Mes Favoris" 
+                description="Votre sélection de biens d'exception"
               />
             </div>
-          </div>
+          </section>
 
-          <div className="col-span-2 sm:col-span-1 space-y-3 sm:space-y-4">
-            <h2 className="text-[10px] sm:text-sm font-black text-forest-green/30 uppercase tracking-[0.2em] ml-2 pt-2">Activité</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-1 gap-3 sm:gap-4">
+          <section>
+            <h2 className="text-[10px] font-black text-forest-green/20 uppercase tracking-[0.5em] mb-6 ml-4">Services</h2>
+            <div className="grid gap-4">
               <MenuCard 
                 href="/create" 
-                icon={PlusCircle} 
-                label="Vendre" 
-                description="Vendez vos objets rapidement"
-                color="bg-emerald text-emerald-600"
+                icon={Plus} 
+                label="Publier une annonce" 
+                description="Vendez au meilleur prix sur Way Market"
+                badge="Nouveau"
               />
               <MenuCard 
-                href="/compte" 
-                icon={Settings} 
-                label="Profil" 
-                description="Modifier vos préférences"
-                color="bg-forest-green text-emerald"
+                href="/messages" 
+                icon={MessageSquare} 
+                label="Messagerie" 
+                description="Discutez avec vos acheteurs et vendeurs"
               />
-              <div className="col-span-2 sm:col-span-1">
-                <MenuCard 
-                  href="/pro" 
-                  icon={Zap} 
-                  label="Passer Pro" 
-                  description="Boostez votre visibilité"
-                  color="bg-emerald text-emerald-600"
-                />
-              </div>
-
               {currentUser?.role === 'ADMIN' && (
-                <div className="col-span-2 sm:col-span-1">
-                  <MenuCard 
-                    href="/admin" 
-                    icon={Shield} 
-                    label="Console Admin" 
-                    description="Gérer la plateforme"
-                    color="bg-forest-green text-emerald"
-                  />
-                </div>
+                <MenuCard 
+                  href="/admin" 
+                  icon={Shield} 
+                  label="Console Admin" 
+                  description="Accès restreint au centre de contrôle"
+                />
               )}
             </div>
-          </div>
+          </section>
+
+        </div>
+
+        <div className="mt-16 text-center">
+            <p className="text-[10px] font-bold text-forest-green/20 uppercase tracking-[0.5em]">Way Market • Elite Caucasian Marketplace</p>
+            <p className="text-[9px] text-forest-green/10 mt-2">Version 2.4.0 Elite Edition</p>
         </div>
       </main>
     </div>

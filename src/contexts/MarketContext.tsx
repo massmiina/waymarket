@@ -215,7 +215,7 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
           
           // Fetch user-specific data
           const [favRes, convsRes] = await Promise.all([
-            fetch(`/api/favorites?userId=${syncedUser.id}`),
+            fetch(`/api/favoris?userId=${syncedUser.id}`),
             fetch(`/api/conversations?userId=${syncedUser.id}`)
           ]);
 
@@ -371,7 +371,7 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
     setFavorites(newFavorites);
 
     try {
-      const res = await fetch('/api/favorites', {
+      const res = await fetch('/api/favoris', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: currentUser.id, listingId })

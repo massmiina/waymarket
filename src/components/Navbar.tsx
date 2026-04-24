@@ -35,14 +35,14 @@ export default function Navbar() {
   const NavLinks = () => (
     <>
       <Link
-        href="/favorites"
+        href="/favoris"
         onClick={closeMobileMenu}
         className={`flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest ${
-          pathname === '/favorites' ? 'text-emerald bg-emerald/10' : 'text-slate-400 hover:text-emerald hover:bg-emerald/5'
+          pathname === '/favoris' ? 'text-emerald bg-emerald/10' : 'text-slate-400 hover:text-emerald hover:bg-emerald/5'
         }`}
       >
         <div className="relative">
-          <Heart className={`h-4 w-4 ${pathname === '/favorites' ? 'fill-emerald' : ''}`} />
+          <Heart className={`h-4 w-4 ${pathname === '/favoris' ? 'fill-emerald' : ''}`} />
           {favorites.length > 0 && (
             <span className="absolute -top-1.5 -right-1.5 bg-emerald text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-black">
               {favorites.length}
@@ -158,24 +158,6 @@ export default function Navbar() {
             >
               <PlusCircle className="h-4 w-4" />
               <span>Vendre</span>
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-              <div className="flex items-center sm:hidden gap-3 mobile-only">
-                 {currentUser?.role === 'ADMIN' && (
-                   <Link
-                    href="/admin"
-                    className="p-2 rounded-full bg-emerald/10 text-emerald shadow-sm border border-emerald/20"
-                  >
-                    <Shield className="h-5 w-5" />
-                  </Link>
-                 )}
-            <Link
-              href="/menu"
-              className="p-2 text-slate-400 active:scale-90 transition-transform"
-            >
-              <Menu className="h-6 w-6" />
             </Link>
           </div>
         </div>

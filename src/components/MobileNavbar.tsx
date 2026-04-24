@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
   Home, 
-  Search, 
-  PlusCircle, 
+  Heart, 
   MessageCircle, 
   User,
   Plus
@@ -44,31 +43,25 @@ export default function MobileNavbar() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] flex sm:hidden mobile-only">
-      {/* Background with Blur - Glassmorphism */}
-      <div className="absolute inset-0 bg-white/95 backdrop-blur-2xl border-t border-slate-100/50"></div>
+    <div className="fixed bottom-0 left-0 right-0 z-[100] flex sm:hidden">
+      {/* Background with Blur - Premium Glassmorphism */}
+      <div className="absolute inset-0 bg-white/80 backdrop-blur-3xl border-t border-slate-100/50 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]"></div>
       
       {/* Safe Area Container */}
-      <div className="relative flex items-center justify-around h-16 w-full pb-safe px-1">
+      <div className="relative flex items-center justify-around h-20 w-full pb-safe px-2">
         
         <NavItem href="/" icon={Home} label="Accueil" />
         
-        <Link 
-          href="/" 
-          className="flex flex-col items-center justify-center gap-0.5 w-full h-full text-slate-400"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        >
-          <Search className="h-5 w-5" />
-          <span className="text-[8px] font-black uppercase tracking-tighter">Découvrir</span>
-        </Link>
+        <NavItem href="/favoris" icon={Heart} label="Favoris" />
         
-        {/* Floating Action Button for Sell */}
-        <div className="relative -top-5">
+        {/* Floating Action Button for Sell - "The Plus Button" */}
+        <div className="relative -top-6">
           <Link 
             href="/create"
-            className="flex items-center justify-center w-12 h-12 bg-emerald text-white rounded-full shadow-neon hover:shadow-neon-hover ring-4 ring-white transition-all hover:scale-105 active:scale-95"
+            className="flex items-center justify-center w-14 h-14 bg-emerald text-white rounded-full shadow-[0_15px_30px_-5px_rgba(16,185,129,0.4)] hover:shadow-emerald/50 ring-4 ring-background transition-all hover:scale-110 active:scale-90 group"
           >
-            <Plus className="h-6 w-6 stroke-[3px]" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-emerald to-emerald-light rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <Plus className="relative h-8 w-8 stroke-[2.5px]" />
           </Link>
         </div>
         
@@ -79,7 +72,7 @@ export default function MobileNavbar() {
           badgeCount={unreadMessagesCount} 
         />
         
-        <NavItem href="/compte" icon={User} label="Moi" />
+        <NavItem href="/compte" icon={User} label="Profil" />
         
       </div>
     </div>

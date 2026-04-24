@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Outfit, Cinzel, Tenor_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { MarketProvider } from "@/contexts/MarketContext";
-import MobileNavbar from "@/components/Navbar"; // Keep for mobile logic if separate
+import MobileNavbar from "@/components/MobileNavbar";
 import Navbar from "@/components/Navbar";
 import "@uploadthing/react/styles.css";
 

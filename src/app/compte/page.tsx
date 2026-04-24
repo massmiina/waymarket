@@ -187,7 +187,7 @@ export default function AccountPage() {
                 icon={Heart} 
                 title="Favoris" 
                 description="Vos coups de cœur" 
-                href="/favorites"
+                href="/favoris"
                 badge={favorites.length}
               />
               <DashboardCard 

@@ -119,7 +119,7 @@ export default function RecherchePage() {
                   <MapPin className="h-4 w-4 text-slate-300 group-focus-within/field:text-emerald" />
                   <input
                     type="text"
-                    placeholder="Ville ou code postal"
+                    placeholder="Ville"
                     value={locationQuery}
                     onChange={(e) => setLocationQuery(e.target.value)}
                     className="w-full border-none focus:ring-0 bg-transparent text-forest-green font-bold text-sm placeholder:text-slate-400 placeholder:font-medium"
